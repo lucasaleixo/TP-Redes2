@@ -1,0 +1,25 @@
+
+# ==========================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula e Lucas Olini
+# Entrega: 08/06/2018
+# ==========================================================
+Endereco: 225.0.0.1
+Porta: 1905
+Buffer: Hello World
+
+Estabeleceu o socket para comunicacao
+Definiu o timeout do socket para 0.2s
+Definiu o TTL para 1
+Definiu o grupo MULTICAST para transmitir
+
+Enviando: Hello World
+Para: 225.0.0.1
+Porta: 1905
+Aguardando para receber
+
+Recebeu: ack
+De: ('172.17.0.19', 1905)
+Aguardando para receber
+TIMEOUT
+Fechando o socket

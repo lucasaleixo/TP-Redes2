@@ -1,0 +1,44 @@
+# ==========================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula e Lucas Olini
+# Entrega: 08/06/2018
+# ==========================================================
+########################
+Endereco: 225.0.0.1
+Porta: 1905
+Process ID: 7860
+########################
+Endereco: 225.0.0.1
+Porta: 1905
+Process ID: 7861
+########################
+Endereco: 225.0.0.1
+Porta: 1905
+Process ID: 7862
+########################
+
+################################################
+waiting to receive message
+received 11 bytes from ('172.17.0.19', 39060)
+Hello World
+sending acknowledgement to ('172.17.0.19', 39060)
+
+################################################
+
+waiting to receive message
+
+################################################
+waiting to receive message
+received 11 bytes from ('172.17.0.19', 39060)
+Hello World
+################################################
+
+waiting to receive message
+
+################################################
+waiting to receive message
+received 11 bytes from ('172.17.0.19', 39060)
+Hello World
+################################################
+
+waiting to receive message
