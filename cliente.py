@@ -73,7 +73,7 @@ try:
             print >>sys.stderr, 'received "%s" from %s' % (data, server)
 	
 finally:
-    # Ao final da execucao, fecha o socket e encerra o programa
+    # Ao final da execucao, fecha o socket e o arquivo de log
     print >>sys.stderr, 'closing socket'
     log.write("Fechando o socket\n")
     log.close()

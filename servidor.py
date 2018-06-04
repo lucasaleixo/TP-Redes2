@@ -100,7 +100,7 @@ if __name__ == '__main__':
 	print 'running server on %s:%d' % (addr, port)
 	print 'Process ID: ', pid
 	
-	# Passa o log e a tabela como parametro, e chama a funcao do servidor
+	# Passa o log e a tabela como parametro para a funcao do servidor
     	log = open("log_servidor.txt","a")
 	mcast_server(addr, port, pid, log, tabela)
 	log.close()
