@@ -5,6 +5,7 @@
  # ======================================================================== 
 
 import socket
+from socket import timeout
 import struct
 import sys
 import os
@@ -50,26 +51,30 @@ def mcast_server(addr, port, pid, log, tabela):
     mensagem = Mensagem(1, None, None, None, None)
     mensagem_serializada = pickle.dumps(mensagem, 2)
     sent = sock.sendto(mensagem_serializada, (addr, port))
-    sock.settimeout(4)
+    sock.settimeout(2)
     maior_id = 0
-    t_end = time.time() + 3
+    t_end = time.time() + 2
     while time.time() < t_end:
         try:
             data, addr = sock.recvfrom(1024)
             mensagem = pickle.loads(data)
             if maior_id < mensagem.id_servidor:
                 maior_id = mensagem.id_servidor
-            servidor.lista_servidores.append((mensagem.id_servidor, time.time()))
-        except:
-            # Ainda nao tem nenhum servidor, este vai ser o servidor 1
-            print >>sys.stderr, '\nNenhum servidor encontrado, atribuindo id 1 ao servidor'
-            log.write("\nNenhum servidor encontrado, atribuindo id 1 ao servidor\n")
-            servidor.servidor_id = 1
-    if maior_id != 0:
+            servidor.lista_servidores.append((mensagem.id_servidor, time.time()))   
+        except timeout:
+            # Fez a busca por 2 segundos por servidores existentes checando seus ids
+            print >>sys.stderr, '\nServidores descobertos e salvos na lista de servidores'
+            log.write("\nServidores descobertos e salvos na lista de servidores\n")       
+    if (maior_id != 0):
         # Atribuindo id do servidor
-        print >>sys.stderr, '\nAtribuindo id = %s ao servidor' % maior_id + 1
+        print >>sys.stderr, '\nAtribuindo id = %s ao servidor' % str(maior_id + 1)
+        log.write("\nServidores descobertos e salvos na lista de servidores\n")
         servidor.servidor_id = maior_id + 1
-        print >>sys.stderr, '\nAtribuindo id = %s ao servidor' % servidor.servidor_id
+    elif (maior_id == 0):
+        # Ainda nao tem nenhum servidor, este vai ser o servidor 1
+        print >>sys.stderr, '\nNenhum servidor encontrado, atribuindo id 1 ao servidor'
+        log.write("\nNenhum servidor encontrado, atribuindo id 1 ao servidor\n")
+        servidor.servidor_id = 1
     log.write("\n################################################")        
     sock.settimeout(None)
     try:
@@ -78,24 +83,49 @@ def mcast_server(addr, port, pid, log, tabela):
             # Escuta no endereco e porta passados como parametro
             print >>sys.stderr, '\nwaiting to receive message'
             log.write("\nwaiting to receive message\n")
-            data, addr = sock.recvfrom(1024)
-            mensagem = pickle.loads(data)
+            sock.settimeout(10)
+            try:
+                data, addr = sock.recvfrom(1024)
+                mensagem = pickle.loads(data)
 
-            # Ao receber uma nova mensagem, registra no log de execucao
-            print >>sys.stderr, 'received %s bytes from %s' % (len(data), addr)
-            log.write("received %s bytes from %s\n" % (len(data), addr))
-            print >>sys.stderr, data
-            log.write(data)	  
-
-            # Se o servidor tiver o MENOR process_id, responde para o cliente
-            if(int(tabela[0]) == pid):
-                print >>sys.stderr, 'sending acknowledgement to', addr
-
-            # Regristra a resposta no log de execucao dos servidores
-            log.write("\nsending acknowledgement to %s\n" % str(addr))
-            mensagem.resultado =  eval(str(mensagem.numero_1) + mensagem.operacao + str(mensagem.numero_2))
-            mensagem_serializada = pickle.dumps(mensagem, 2)
-            sock.sendto(mensagem_serializada, addr)
+                # Ao receber uma nova mensagem, registra no log de execucao
+                print >>sys.stderr, 'received %s bytes from %s' % (len(data), addr)
+                log.write("received %s bytes from %s\n" % (len(data), addr))
+                print >>sys.stderr, data
+                log.write(data)	  
+                if (mensagem.tipo == 2):
+                    # Se o servidor tiver o MENOR process_id, responde para o cliente
+                    if(int(tabela[0]) == pid):
+                        print >>sys.stderr, 'sending acknowledgement to', addr
+                        # Regristra a resposta no log de execucao dos servidores
+                        log.write("\nsending acknowledgement to %s\n" % str(addr))
+                        mensagem.resultado =  eval(str(mensagem.numero_1) + mensagem.operacao + str(mensagem.numero_2))
+                        mensagem_serializada = pickle.dumps(mensagem, 2)
+                        sock.sendto(mensagem_serializada, addr)
+                elif (mensagem.tipo == 1):   
+                    print >>sys.stderr, '\nchegou pedido de id, este servidor id = %s' % servidor.servidor_id        
+                    mensagem.id_servidor = servidor.servidor_id
+                    mensagem_serializada = pickle.dumps(mensagem, 2)
+                    sock.sendto(mensagem_serializada, addr)
+            except timeout:
+                servidor.lista_servidores = []
+                mensagem.tipo = 1
+                mensagem_serializada = pickle.dumps(mensagem, 2)
+                sock.sendto(mensagem_serializada, addr)
+                sock.settimeout(2)
+                t_end = time.time() + 2
+                while time.time() < t_end:
+                    try:
+                        data, addr = sock.recvfrom(1024)
+                        mensagem = pickle.loads(data)
+                        if (mensagem.id_servidor != None):
+                            servidor.lista_servidores.append((mensagem.id_servidor, time.time()))   
+                        print servidor.lista_servidores
+                    except timeout:
+                        # Fez a busca por 2 segundos por servidores existentes checando seus ids
+                        print >>sys.stderr, '\nServidores descobertos e salvos na lista de servidores'
+                        log.write("\nServidores descobertos e salvos na lista de servidores\n")
+                print servidor.lista_servidores
 
         log.write("\n################################################\n")  
 
