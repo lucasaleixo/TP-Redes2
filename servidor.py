@@ -13,11 +13,11 @@ import pickle
 import time
 
 ADDRESS = '225.1.1.1'
-PORTA_MULTICAST = 12345
+PORTA_MULTICAST = 3333
 PORTA_RESPOSTA = 4321
 
 class Mensagem(object):
-    tipo = None # 1 - Pegar id inicial; 2 - Pedido Heartbeat; 3 - Resposta Hearbeat ; 4 - Calculo; 
+    tipo = None # 1 - Pegar id inicial; 2 - Pedido Heartbeat; 3 - Resposta Hearbeat ; 4 - Calculo;  5 - Reposta Calculo
     id_servidor = None
     numero_1 = None
     numero_2 = None
@@ -44,7 +44,7 @@ class Servidor(object):
         self.socket_recebimento.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket_recebimento.bind(('', PORTA_MULTICAST))
         # Define o grupo MULTICAST, e adiciona o servidor ao grupo de MULTICAST
-        mreq = struct.pack('4sl', socket.inet_aton(addr), socket.INADDR_ANY)
+        mreq = struct.pack('4sl', socket.inet_aton(ADDRESS), socket.INADDR_ANY)
         self.socket_recebimento.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         # Define o socket de envio
         self.socket_envio = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -57,6 +57,7 @@ def mcast_server(log):
     mensagem_serializada = pickle.dumps(mensagem, 2)
     maior_id = 0
     servidor.socket_recebimento.settimeout(3)
+    print('envia')
     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
     while True:
         try:
@@ -88,12 +89,14 @@ def mcast_server(log):
 
     # Loop de requisicoes e respostas
     while True:
+        print('while true')
         # Escuta no endereco e porta passados como parametro
         print >>sys.stderr, '\nAguardando receber mensagem'
         log.write("\nAguardando receber mensagem")
         servidor.socket_recebimento.settimeout(3)
         hearbeat_timer = time.time() + 7
         while hearbeat_timer > time.time():
+            print('while heartbeat')
             try:
                 data, addr = servidor.socket_recebimento.recvfrom(1024)
                 mensagem = pickle.loads(data)
@@ -116,7 +119,7 @@ def mcast_server(log):
                     # Registra a resposta no log de execucao dos servidores
                     print >>sys.stderr, 'sending acknowledgement to', ADDRESS
                     log.write("\nsending acknowledgement to %s\n" % str(ADDRESS))
-                    mensagem.resultado =  eval(str(mensagem.numero_1) + mensagem.operacao + str(mensagem.numero_2))
+                    mensagem = Mensagem(5, servidor.servidor_id, None, None, None, eval(str(mensagem.numero_1) + mensagem.operacao + str(mensagem.numero_2)))
                     mensagem_serializada = pickle.dumps(mensagem, 2)
                     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_RESPOSTA))
             except timeout:
@@ -137,7 +140,7 @@ def mcast_server(log):
                 print("antes do recebimento")
                 data, addr = servidor.socket_recebimento.recvfrom(1024)
                 mensagem = pickle.loads(data)
-                print("apos do recebimento, id recebido = %d" % mensagem.id_servidor)
+                print(str(mensagem.tipo) + str(mensagem.id_servidor))
                 if (mensagem.tipo == 3):
                     if (mensagem.id_servidor != None):
                         servidor.lista_servidores.append((mensagem.id_servidor, time.time()))
