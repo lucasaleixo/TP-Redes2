@@ -13,7 +13,7 @@ import pickle
 import time
 
 # Endereco e porta para recebimento
-ADDRESS = '224.1.1.1'
+ADDRESS = '225.1.1.1'
 PORTA_MULTICAST = 3333
 
 # Porta para o envio da resposta
@@ -89,14 +89,14 @@ def Servidor_Multicast(log):
                             maior_id = mensagem.id_servidor
 
     		            # Adiciona o servidor a lista de servidores
-                        servidor.lista_servidores.append((mensagem.id_servidor, time.time()))
+                        servidor.lista_servidores.append([mensagem.id_servidor, time.time()])
 		    log.write("\nAdicionou o servidor na lista de servidores\n")
 
 	   # Se houver timeout, envia novamente. Se terminou o tempo de recebimento inicial, sai do loop
         except timeout:
             if time_end > time.time():
                 servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
-
+          
     # Define o timeout para o socket de recebimento
     servidor.socket_recebimento.settimeout(None)
 
@@ -116,9 +116,11 @@ def Servidor_Multicast(log):
         # Ainda nao tem nenhum servidor, este vai ser o servidor 1
         print >>sys.stderr, '\nNenhum servidor encontrado, atribuindo id 1 ao servidor'
         log.write("Nenhum servidor encontrado\n")
-	log.write("Atribuindo o ID 1 ao servidor\n")
+        log.write("Atribuindo o ID 1 ao servidor\n")
         servidor.servidor_id = 1
 
+    mensagem = Mensagem(3, servidor.servidor_id, None, None)
+    mensagem_serializada = pickle.dumps(mensagem, 2)
     log.write("##########################################################\n")
 
     # Loop de requisicoes e respostas
@@ -144,12 +146,18 @@ def Servidor_Multicast(log):
                     log.write("\nNovo servidor entrando na rede\n")
                     log.write("Enviando o id deste servidor\n")
 
-                # Pedido de heartbeat
-                elif (mensagem.tipo == 3):   
-                    print >>sys.stderr, '\nchegou pedido de id, este servidor id = %s' % servidor.servidor_id   
-                    mensagem = Mensagem(4, servidor.servidor_id, None, None)     
-                    mensagem_serializada = pickle.dumps(mensagem, 2)
-                    servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+                # Mensagem de Heartbeat
+                elif (mensagem.tipo == 3):
+                    if (mensagem.id_servidor != None):
+                        if (mensagem.id_servidor != servidor.servidor_id):
+                            servidor_novo = True
+                            for serv in servidor.lista_servidores:
+                                if serv[0] == mensagem.id_servidor:
+                                    serv[1] = time.time()
+                                    servidor_novo = False
+                            if servidor_novo:
+                                servidor.lista_servidores.append([mensagem.id_servidor, time.time()])
+                    print(servidor.lista_servidores)
 
                 # Calculo
                 elif (mensagem.tipo == 5):
@@ -164,9 +172,15 @@ def Servidor_Multicast(log):
 		            # Se for o lider, envia o resultado do calculo
                     if servidor_lider:
                         log.write("\n\nServidor lider identificado")
-                        index = mensagem.operacao.index("/")
-                        if (mensagem.operacao[index+1] == '0'):
-                            resultado_calculo = "Divisao por zero. Nao eh possivel calcular"
+                        try:
+                            index = mensagem.operacao.index("/")
+                        except ValueError:
+                            index = -1
+                        if index != -1:
+                            if (mensagem.operacao[index+1] == '0'):
+                                resultado_calculo = "Divisao por zero. Nao eh possivel calcular"
+                            else:
+                                resultado_calculo = eval(mensagem.operacao)
                         else:
                             resultado_calculo = eval(mensagem.operacao)
                         print >>sys.stderr, '\nEnviando resultado do calculo para o cliente.\nResultado = %s \n' % resultado_calculo
@@ -184,35 +198,19 @@ def Servidor_Multicast(log):
 		log.write("\nChecando o tempo para a atualizacao da lista de servidores\n")
         servidor.socket_recebimento.settimeout(None)
 
-        # Atualiza a lista de servidores
-        servidor.lista_servidores = []
-        mensagem = Mensagem(3, None, None, None)
+        # Envia Id para atualizar lista de servidores e limpa a propria lista
+        mensagem = Mensagem(3, servidor.servidor_id, None, None)
         mensagem_serializada = pickle.dumps(mensagem, 2)
         servidor.socket_recebimento.settimeout(2)
         servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
         print >>sys.stderr, '\n5 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
         log.write("\n5 segundos se passaram")
         log.write("\nAtualizando a lista de servidores ativos")
-
-        time_end = time.time() + 8
-        while time_end > time.time():
-            try:
-                data, addr = servidor.socket_recebimento.recvfrom(1024)
-                mensagem = pickle.loads(data)
-
-                if (mensagem.tipo == 4):
-                    if (mensagem.id_servidor != None):
-                        if (mensagem.id_servidor != servidor.servidor_id):
-                            if any(mensagem.id_servidor in servidor for servidor in servidor.lista_servidores):
-                                pass
-                            else:
-                                servidor.lista_servidores.append((mensagem.id_servidor, time.time()))
-
-            except timeout:
-                if time_end > time.time():
-                    servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
-
-        print servidor.lista_servidores
+        for servi in servidor.lista_servidores:
+            print(time.time() - servi[1])
+            if time.time() - servi[1] > 20:
+                servidor.lista_servidores.remove(servi)
+        print(servidor.lista_servidores)
         servidor.socket_recebimento.settimeout(None)
     log.write("##########################################################\n")  
 

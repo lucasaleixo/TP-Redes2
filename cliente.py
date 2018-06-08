@@ -10,7 +10,7 @@ import sys
 import pickle
 
 # Endereco e porta para recebimento
-ADDRESS = '224.1.1.1'
+ADDRESS = '225.1.1.1'
 PORTA_MULTICAST = 3333
 
 # Definicao da porta para resposta
