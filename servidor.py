@@ -43,7 +43,7 @@ class Servidor(object):
         self.servidor_id = servidor_id
         self.lista_servidores = lista_servidores
 
-        # Define o socket de recebimento, e conecta de acordo com a porta passada como parametro
+        # Define o socket de recebimento, e conecta de acordo com a porta do multicast
         self.socket_recebimento = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.socket_recebimento.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket_recebimento.bind(('', PORTA_MULTICAST))
@@ -51,10 +51,14 @@ class Servidor(object):
         # Define o grupo MULTICAST, e adiciona o servidor ao grupo de MULTICAST
         mreq = struct.pack('4sl', socket.inet_aton(ADDRESS), socket.INADDR_ANY)
         self.socket_recebimento.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+        print "Estabeleceu o socket para recebimento de mensagens\n"
+        log.write("Estabeleceu o socket para recebimento de mensagens\n")
 
         # Define o socket de envio
         self.socket_envio = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.socket_envio.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)
+        print "Estabeleceu o socket para envio de mensagens\n"
+        log.write("Estabeleceu o socket para envio de mensagens\n")
 
 # Funcao principal do servidor
 def Servidor_Multicast(log):
@@ -71,9 +75,13 @@ def Servidor_Multicast(log):
     # Define o timeout para o socket e transmite na PORTA_MULTICAST
     servidor.socket_recebimento.settimeout(2)
     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+    print "Enviando mensagem pedindo o Id dos outros servidores para popular a lista de servidores\n"
+    log.write("Enviando mensagem pedindo o Id dos outros servidores para popular a lista de servidores\n")
 
+    print "Aguardando 5 segundos para popular a lista...\n"
+    log.write("Aguardando 5 segundos para popular a lista...\n")
     time_end = time.time() + 5
-    # Loop para compor a lista de servidores
+    # Loop para compor a lista de servidores. Rodando no maximo por 5 segundos
     while time_end > time.time():
         try:
 	        # Recebe os dados atraves do socket de recebimento
@@ -83,6 +91,7 @@ def Servidor_Multicast(log):
 	        # Se o tipo da mensagem for 2, verifica o ID
             if mensagem.tipo == 2:
                 if mensagem.id_servidor != None:
+                    # Verifica se este ID ja existe na lista de servidores disponiveis
                     if any(mensagem.id_servidor in servidor for servidor in servidor.lista_servidores):
                         pass
                     else:
@@ -92,11 +101,12 @@ def Servidor_Multicast(log):
 
     		            # Adiciona o servidor a lista de servidores
                         servidor.lista_servidores.append([mensagem.id_servidor, time.time()])
-		    log.write("\nAdicionou o servidor na lista de servidores\n")
-
+                        print "Recebeu Id = %s. Colocando este servidor na lista de servidores disponiveis\n" % mensagem.id_servidor
+                        log.write("Recebeu Id = %s. Colocando este servidor na lista de servidores disponiveis\n" % mensagem.id_servidor)
 	   # Se houver timeout, envia novamente. Se terminou o tempo de recebimento inicial, sai do loop
         except timeout:
             if time_end > time.time():
+                # Pia, nao coloca log aqui, pq eh zoado isso que to fazendo kkkkkk so apaga esse comentario dai
                 servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
           
     # Define o timeout para o socket de recebimento
