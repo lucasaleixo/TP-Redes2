@@ -12,12 +12,12 @@ import os
 import pickle
 import time
 
-ADDRESS = '225.1.1.1'
+ADDRESS = '224.1.1.1'
 PORTA_MULTICAST = 3333
 PORTA_RESPOSTA = 4321
 
 class Mensagem(object):
-    tipo = None # 1 - Pegar id inicial; 2 - Pedido Heartbeat; 3 - Resposta Hearbeat ; 4 - Calculo;  5 - Reposta Calculo
+    tipo = None # 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Pedido Heartbeat; 4 - Resposta Hearbeat ; 5 - Calculo;  6 - Reposta Calculo
     id_servidor = None
     numero_1 = None
     numero_2 = None
@@ -57,16 +57,13 @@ def mcast_server(log):
     mensagem_serializada = pickle.dumps(mensagem, 2)
     maior_id = 0
     servidor.socket_recebimento.settimeout(3)
-    print('envia')
     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
     while True:
         try:
-            print("antes do recebimento inicial")
             data, addr = servidor.socket_recebimento.recvfrom(1024)
-            print("apos recebimento inicial")
             mensagem = pickle.loads(data)
             print(str(mensagem.tipo) + " " + str(mensagem.id_servidor))
-            if mensagem.tipo == 1:
+            if mensagem.tipo == 2:
                 if mensagem.id_servidor != None:
                     if maior_id < mensagem.id_servidor:
                         maior_id = mensagem.id_servidor
@@ -89,14 +86,12 @@ def mcast_server(log):
 
     # Loop de requisicoes e respostas
     while True:
-        print('while true')
         # Escuta no endereco e porta passados como parametro
         print >>sys.stderr, '\nAguardando receber mensagem'
         log.write("\nAguardando receber mensagem")
-        servidor.socket_recebimento.settimeout(3)
-        hearbeat_timer = time.time() + 7
+        servidor.socket_recebimento.settimeout(1)
+        hearbeat_timer = time.time() + 5
         while hearbeat_timer > time.time():
-            print('while heartbeat')
             try:
                 data, addr = servidor.socket_recebimento.recvfrom(1024)
                 mensagem = pickle.loads(data)
@@ -104,34 +99,37 @@ def mcast_server(log):
                 if (mensagem.tipo == 1):
                     print >>sys.stderr, "\nNovo servidor entrando na rede, enviando o id deste servidor"
                     log.write("\nNovo servidor entrando na rede, enviando o id deste servidor")
-                    mensagem = Mensagem(1, servidor.servidor_id, None, None, None, None)
+                    mensagem = Mensagem(2, servidor.servidor_id, None, None, None, None)
                     mensagem_serializada = pickle.dumps(mensagem, 2)
                     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
                 # Pedido de heartbeat
-                elif (mensagem.tipo == 2):   
+                elif (mensagem.tipo == 3):   
                     print >>sys.stderr, '\nchegou pedido de id, este servidor id = %s' % servidor.servidor_id   
-                    mensagem = Mensagem(3, servidor.servidor_id, None, None, None, None)     
+                    mensagem = Mensagem(4, servidor.servidor_id, None, None, None, None)     
                     mensagem_serializada = pickle.dumps(mensagem, 2)
                     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
                 # Calculo
-                elif (mensagem.tipo == 4):
-                    print("pedido de calculo")
-                    # Registra a resposta no log de execucao dos servidores
-                    print >>sys.stderr, 'sending acknowledgement to', ADDRESS
-                    log.write("\nsending acknowledgement to %s\n" % str(ADDRESS))
-                    mensagem = Mensagem(5, servidor.servidor_id, None, None, None, eval(str(mensagem.numero_1) + mensagem.operacao + str(mensagem.numero_2)))
-                    mensagem_serializada = pickle.dumps(mensagem, 2)
-                    servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_RESPOSTA))
+                elif (mensagem.tipo == 5):
+                    servidor_lider = True
+                    for serv in servidor.lista_servidores:
+                        if serv[0] < servidor.servidor_id:
+                            servidor_lider = False
+                    if servidor_lider:
+                        print >>sys.stderr, 'sending acknowledgement to', ADDRESS
+                        log.write("\nsending acknowledgement to %s\n" % str(ADDRESS))
+                        mensagem = Mensagem(6, servidor.servidor_id, None, None, None, eval(mensagem.operacao))
+                        mensagem_serializada = pickle.dumps(mensagem, 2)
+                        servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_RESPOSTA))
             except timeout:
-                print >>sys.stderr, '\nNenhuma mensagem recebida em 3 segundos, checando se ja passou o tempo para a atualizacao da lista de servidores'
-                log.write("\nNenhuma mensagem recebida em 3 segundos, checando se ja passou o tempo para a atualizacao da lista de servidores")
+                print >>sys.stderr, '\nNenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para a atualizacao da lista de servidores'
+                log.write("\nNenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para a atualizacao da lista de servidores")
         servidor.socket_recebimento.settimeout(None)
 
         # Atualiza a lista de servidores
-        print >>sys.stderr, '\n10 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
-        log.write("\n10 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos")
+        print >>sys.stderr, '\n5 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
+        log.write("\n5 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos")
         servidor.lista_servidores = []
-        mensagem = Mensagem(2, None, None, None, None, None)
+        mensagem = Mensagem(3, None, None, None, None, None)
         mensagem_serializada = pickle.dumps(mensagem, 2)
         servidor.socket_recebimento.settimeout(2)
         servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
@@ -141,7 +139,7 @@ def mcast_server(log):
                 data, addr = servidor.socket_recebimento.recvfrom(1024)
                 mensagem = pickle.loads(data)
                 print(str(mensagem.tipo) + str(mensagem.id_servidor))
-                if (mensagem.tipo == 3):
+                if (mensagem.tipo == 4):
                     if (mensagem.id_servidor != None):
                         servidor.lista_servidores.append((mensagem.id_servidor, time.time()))
             except timeout:
@@ -167,37 +165,21 @@ if __name__ == '__main__':
         print 'use: %s addr port' % sys.argv[0]
         sys.exit(1)
 
-    # Com o endereco definido, registra o PROCESS_ID da instancia
-    pid = os.getpid()
-
-    # Arquivo temporario, usado para armazenar os PROCESS_ID
-    f = open("servidores.txt","a")
-    f.write("%d\n" % pid)
-    f.close()
-
-    # Le os dados do arquivo, e armazena em uma tabela
-    with open("servidores.txt", "r") as servidores:
-        tabela = []
-        for line in servidores:
-            tabela.append(line)
-
-    # Se o PROCESS_ID da instancia for o menor, insere o cabecalho no log
-    if(int(tabela[0]) == pid):
-        log.write("# ==========================================================")
-        log.write("\n# Projeto destinado a disciplina de Redes de Computadores II")
-        log.write("\n# Autores: Lucas Aleixo de Paula e Lucas Olini")
-        log.write("\n# Entrega: 08/06/2018")
-        log.write("\n# ==========================================================\n")
-        log.write("########################\n")        
+    log.write("# ==========================================================")
+    log.write("\n# Projeto destinado a disciplina de Redes de Computadores II")
+    log.write("\n# Autores: Lucas Aleixo de Paula e Lucas Olini")
+    log.write("\n# Entrega: 08/06/2018")
+    log.write("\n# ==========================================================\n")
+    log.write("########################\n")        
 
     # Apos o cabecalho, os dados dos demais servidores sao inseridos no log
     log.write("Endereco: %s\nPorta: %d\n" % (addr,port))
-    log.write("Process ID: %d\n" % pid)
+    log.write("Process ID: %d\n" % 1)
     log.write("########################\n")        
     log.close()
 
     print 'running server on %s:%d' % (addr, port)
-    print 'Process ID: ', pid
+    print 'Process ID: ', '1'
 
     # Passa o log e a tabela como parametro para a funcao do servidor
     log = open("log_servidor.txt","a")
