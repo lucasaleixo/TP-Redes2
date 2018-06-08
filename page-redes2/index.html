@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="main.js"></script>   
+<ul>
+  <li><a class="active">Home</a></li>
+  <li><a class="showSingle" target="1">O Problema</a></li>
+  <li><a class="showSingle" target="2">A Solução</a></li>
+  <li><a class="showSingle" target="3">Servidor</a></li>
+  <li><a class="showSingle" target="4">LOG (Servidor)</a></li>
+  <li><a class="showSingle" target="5">Cliente</a></li>
+  <li><a class="showSingle" target="6">LOG (Cliente)</a></li>
+</ul>
+
+<div id="titulo">
+  <h1>Trabalho Prático - Redes de Computadores 2</h1>
+  <h2> Primeiro Semestre de 2018 - Prof. Elias P. Duarte Jr., Ph.D.</h2>
+  <img src="net.jpg" style="width: 40%;"></img>
+  <h2>Lucas Aleixo - GRR20153408</h2>
+  <h2>Lucas Olini - GRR20157108</h2>
+</div>
+
+<section class="cnt">
+<div class="targetDiv" id="div1" >
+  <img src="descricao.PNG"></img>
+</div>
+
+<div class="targetDiv" id="div2" >
+<h1 style="text-align: center;">REPORT GOES HERE</h1>
+</div>
+
+<div class="targetDiv" id="div3" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%">  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
+ <span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
+ <span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+ <span style="color: #888888"># Entrega: 08/06/2018</span>
+ <span style="color: #888888"># ======================================================================== </span>
+
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">socket</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">socket</span> <span style="color: #008800; font-weight: bold">import</span> timeout
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">struct</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">sys</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">pickle</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">time</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Mensagem</span>(<span style="color: #007020">object</span>):
+    tipo <span style="color: #333333">=</span> <span style="color: #007020">None</span> <span style="color: #888888"># 1 - Heartbeat ; 2 - Calculo;</span>
+    id_servidor <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    numero_1 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    numero_2 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    operacao <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
+    resultado <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, tipo, id_servidor<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_1<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_2<span style="color: #333333">=</span><span style="color: #007020">None</span>, operacao<span style="color: #333333">=</span><span style="color: #007020">None</span>, resultado<span style="color: #333333">=</span><span style="color: #007020">None</span>):
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>tipo <span style="color: #333333">=</span> tipo
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>id_servidor <span style="color: #333333">=</span> id_servidor
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_1 <span style="color: #333333">=</span> numero_1
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_2 <span style="color: #333333">=</span> numero_2
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>operacao <span style="color: #333333">=</span> operacao
+	<span style="color: #007020">self</span><span style="color: #333333">.</span>resultado <span style="color: #333333">=</span> resultado
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Servidor</span>(<span style="color: #007020">object</span>):
+    servidor_id <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    lista_servidores <span style="color: #333333">=</span> []
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, lista_servidores<span style="color: #333333">=</span>[], servidor_id<span style="color: #333333">=</span><span style="color: #007020">None</span>):
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> servidor_id
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>lista_servidores <span style="color: #333333">=</span> lista_servidores
+
+<span style="color: #888888"># Funcao principal do servidor</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">mcast_server</span>(addr, port, pid, log, tabela):
+    <span style="color: #888888"># Define o socket, e conecta de acordo com a porta passada como parametro</span>
+    sock <span style="color: #333333">=</span> socket<span style="color: #333333">.</span>socket(socket<span style="color: #333333">.</span>AF_INET, socket<span style="color: #333333">.</span>SOCK_DGRAM)
+    sock<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>SOL_SOCKET, socket<span style="color: #333333">.</span>SO_REUSEADDR, <span style="color: #0000DD; font-weight: bold">1</span>)
+    sock<span style="color: #333333">.</span>bind((<span style="background-color: #fff0f0">&#39;&#39;</span>, port))
+
+    <span style="color: #888888"># Define o grupo MULTICAST, e adiciona o servidor ao grupo de MULTICAST</span>
+    mreq <span style="color: #333333">=</span> struct<span style="color: #333333">.</span>pack(<span style="background-color: #fff0f0">&#39;4sl&#39;</span>, socket<span style="color: #333333">.</span>inet_aton(addr), socket<span style="color: #333333">.</span>INADDR_ANY)
+    sock<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>IPPROTO_IP, socket<span style="color: #333333">.</span>IP_ADD_MEMBERSHIP, mreq)
+
+    servidor <span style="color: #333333">=</span> Servidor([], <span style="color: #007020">None</span>)
+    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
+    mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+    sent <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>sendto(mensagem_serializada, (addr, port))
+    sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
+    maior_id <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
+    t_end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">2</span>
+    <span style="color: #008800; font-weight: bold">while</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">&lt;</span> t_end:
+        <span style="color: #008800; font-weight: bold">try</span>:
+            data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+            mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
+            <span style="color: #008800; font-weight: bold">if</span> maior_id <span style="color: #333333">&lt;</span> mensagem<span style="color: #333333">.</span>id_servidor:
+                maior_id <span style="color: #333333">=</span> mensagem<span style="color: #333333">.</span>id_servidor
+            servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append((mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()))   
+        <span style="color: #008800; font-weight: bold">except</span> timeout:
+            <span style="color: #888888"># Fez a busca por 2 segundos por servidores existentes checando seus ids</span>
+            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores&#39;</span>
+            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)       
+    <span style="color: #008800; font-weight: bold">if</span> (maior_id <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>):
+        <span style="color: #888888"># Atribuindo id do servidor</span>
+        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Atribuindo id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ao servidor&#39;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        servidor<span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>
+    <span style="color: #008800; font-weight: bold">elif</span> (maior_id <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span>):
+        <span style="color: #888888"># Ainda nao tem nenhum servidor, este vai ser o servidor 1</span>
+        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo id 1 ao servidor&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo id 1 ao servidor</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        servidor<span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">################################################&quot;</span>)        
+    sock<span style="color: #333333">.</span>settimeout(<span style="color: #007020">None</span>)
+    <span style="color: #008800; font-weight: bold">try</span>:
+        <span style="color: #888888"># Loop de requisicoes e respostas</span>
+        <span style="color: #008800; font-weight: bold">while</span> <span style="color: #007020">True</span>:
+            <span style="color: #888888"># Escuta no endereco e porta passados como parametro</span>
+            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">waiting to receive message&#39;</span>
+            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">waiting to receive message</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+            sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">10</span>)
+            <span style="color: #008800; font-weight: bold">try</span>:
+                data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+                mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
+
+                <span style="color: #888888"># Ao receber uma nova mensagem, registra no log de execucao</span>
+                <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;received </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> bytes from </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (<span style="color: #007020">len</span>(data), addr)
+                log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;received </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> bytes from </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (<span style="color: #007020">len</span>(data), addr))
+                <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, data
+                log<span style="color: #333333">.</span>write(data)	  
+                <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">2</span>):
+                    <span style="color: #888888"># Se o servidor tiver o MENOR process_id, responde para o cliente</span>
+                    <span style="color: #008800; font-weight: bold">if</span>(<span style="color: #007020">int</span>(tabela[<span style="color: #0000DD; font-weight: bold">0</span>]) <span style="color: #333333">==</span> pid):
+                        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;sending acknowledgement to&#39;</span>, addr
+                        <span style="color: #888888"># Regristra a resposta no log de execucao dos servidores</span>
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">sending acknowledgement to </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(addr))
+                        mensagem<span style="color: #333333">.</span>resultado <span style="color: #333333">=</span>  <span style="color: #007020">eval</span>(<span style="color: #007020">str</span>(mensagem<span style="color: #333333">.</span>numero_1) <span style="color: #333333">+</span> mensagem<span style="color: #333333">.</span>operacao <span style="color: #333333">+</span> <span style="color: #007020">str</span>(mensagem<span style="color: #333333">.</span>numero_2))
+                        mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+                        sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
+                <span style="color: #008800; font-weight: bold">elif</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>):   
+                    <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">chegou pedido de id, este servidor id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> servidor<span style="color: #333333">.</span>servidor_id        
+                    mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">=</span> servidor<span style="color: #333333">.</span>servidor_id
+                    mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+                    sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
+            <span style="color: #008800; font-weight: bold">except</span> timeout:
+                servidor<span style="color: #333333">.</span>lista_servidores <span style="color: #333333">=</span> []
+                mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>
+                mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+                sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
+                sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
+                t_end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">2</span>
+                <span style="color: #008800; font-weight: bold">while</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">&lt;</span> t_end:
+                    <span style="color: #008800; font-weight: bold">try</span>:
+                        data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+                        mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
+                        <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">!=</span> <span style="color: #007020">None</span>):
+                            servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append((mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()))   
+                        <span style="color: #008800; font-weight: bold">print</span> servidor<span style="color: #333333">.</span>lista_servidores
+                    <span style="color: #008800; font-weight: bold">except</span> timeout:
+                        <span style="color: #888888"># Fez a busca por 2 segundos por servidores existentes checando seus ids</span>
+                        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores&#39;</span>
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+                <span style="color: #008800; font-weight: bold">print</span> servidor<span style="color: #333333">.</span>lista_servidores
+
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">################################################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)  
+
+    <span style="color: #888888"># Ao encerrar a execucao, fecha o servidor</span>
+    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">KeyboardInterrupt</span>:
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;done&#39;</span>
+        sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">0</span>)
+
+<span style="color: #888888"># Funcao main</span>
+<span style="color: #008800; font-weight: bold">if</span> __name__ <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&#39;__main__&#39;</span>:
+
+    <span style="color: #888888"># Abre o arquivo log_servidor em modo de escrita</span>
+    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
+    addr <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
+    port <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
+    <span style="color: #888888"># Opcao para receber o endereco e porta como parametro</span>
+    <span style="color: #008800; font-weight: bold">try</span>:
+        addr <span style="color: #333333">=</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">1</span>]
+        port <span style="color: #333333">=</span> <span style="color: #007020">int</span>(sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">2</span>])
+
+    <span style="color: #888888"># Se os parametros estiverem incompletos, emite mensagem de erro</span>
+    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">IndexError</span>:
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;use: </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> addr port&#39;</span> <span style="color: #333333">%</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">0</span>]
+        sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">1</span>)
+
+    <span style="color: #888888"># Com o endereco definido, registra o PROCESS_ID da instancia</span>
+    pid <span style="color: #333333">=</span> os<span style="color: #333333">.</span>getpid()
+
+    <span style="color: #888888"># Arquivo temporario, usado para armazenar os PROCESS_ID</span>
+    f <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;servidores.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
+    f<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> pid)
+    f<span style="color: #333333">.</span>close()
+
+    <span style="color: #888888"># Le os dados do arquivo, e armazena em uma tabela</span>
+    <span style="color: #008800; font-weight: bold">with</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;servidores.txt&quot;</span>, <span style="background-color: #fff0f0">&quot;r&quot;</span>) <span style="color: #008800; font-weight: bold">as</span> servidores:
+        tabela <span style="color: #333333">=</span> []
+        <span style="color: #008800; font-weight: bold">for</span> line <span style="color: #000000; font-weight: bold">in</span> servidores:
+            tabela<span style="color: #333333">.</span>append(line)
+
+    <span style="color: #888888"># Se o PROCESS_ID da instancia for o menor, insere o cabecalho no log</span>
+    <span style="color: #008800; font-weight: bold">if</span>(<span style="color: #007020">int</span>(tabela[<span style="color: #0000DD; font-weight: bold">0</span>]) <span style="color: #333333">==</span> pid):
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;# ==========================================================&quot;</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Projeto destinado a disciplina de Redes de Computadores II&quot;</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula e Lucas Olini&quot;</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Entrega: 08/06/2018&quot;</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;########################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)        
+
+    <span style="color: #888888"># Apos o cabecalho, os dados dos demais servidores sao inseridos no log</span>
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Endereco: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Porta: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (addr,port))
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Process ID: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> pid)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;########################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)        
+    log<span style="color: #333333">.</span>close()
+
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;running server on </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">:</span><span style="background-color: #eeeeee">%d</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (addr, port)
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;Process ID: &#39;</span>, pid
+
+    <span style="color: #888888"># Passa o log e a tabela como parametro para a funcao do servidor</span>
+    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
+    mcast_server(addr, port, pid, log, tabela)
+    log<span style="color: #333333">.</span>close()
+</pre></td></tr></table></div>
+
+<div class="targetDiv" id="div4" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ==========================================================</span>
+<span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
+<span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+<span style="color: #888888"># Entrega: 08/06/2018</span>
+<span style="color: #888888"># ==========================================================</span>
+<span style="color: #888888">########################</span>
+Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
+Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
+Process ID: <span style="color: #0000DD; font-weight: bold">7860</span>
+<span style="color: #888888">########################</span>
+Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
+Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
+Process ID: <span style="color: #0000DD; font-weight: bold">7861</span>
+<span style="color: #888888">########################</span>
+Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
+Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
+Process ID: <span style="color: #0000DD; font-weight: bold">7862</span>
+<span style="color: #888888">########################</span>
+
+<span style="color: #888888">################################################</span>
+waiting to receive message
+received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
+Hello World
+sending acknowledgement to (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
+
+<span style="color: #888888">################################################</span>
+
+waiting to receive message
+
+<span style="color: #888888">################################################</span>
+waiting to receive message
+received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
+Hello World
+<span style="color: #888888">################################################</span>
+
+waiting to receive message
+
+<span style="color: #888888">################################################</span>
+waiting to receive message
+received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
+Hello World
+<span style="color: #888888">################################################</span>
+
+waiting to receive message
+</pre></div>
+
+<div class="targetDiv" id="div5" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%">  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
+ <span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
+ <span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+ <span style="color: #888888"># Entrega: 08/06/2018</span>
+ <span style="color: #888888"># ======================================================================== </span>
+
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">socket</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">struct</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">sys</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">pickle</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Mensagem</span>(<span style="color: #007020">object</span>):
+    tipo <span style="color: #333333">=</span> <span style="color: #007020">None</span> <span style="color: #888888"># 1 - Heartbeat ; 2 - Calculo;</span>
+    id_servidor <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    numero_1 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    numero_2 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+    operacao <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
+    resultado <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, tipo, id_servidor<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_1<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_2<span style="color: #333333">=</span><span style="color: #007020">None</span>, operacao<span style="color: #333333">=</span><span style="color: #007020">None</span>, resultado<span style="color: #333333">=</span><span style="color: #007020">None</span>):
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>tipo <span style="color: #333333">=</span> tipo
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>id_servidor <span style="color: #333333">=</span> id_servidor
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_1 <span style="color: #333333">=</span> numero_1
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_2 <span style="color: #333333">=</span> numero_2
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>operacao <span style="color: #333333">=</span> operacao
+	<span style="color: #007020">self</span><span style="color: #333333">.</span>resultado <span style="color: #333333">=</span> resultado
+
+<span style="color: #888888"># Funcao main</span>
+<span style="color: #008800; font-weight: bold">if</span> __name__ <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&#39;__main__&#39;</span>:
+    <span style="color: #888888"># Abre o arquivo log_cliente.txt em modo de escrita e printa o cabecalho</span>
+    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_cliente.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Projeto destinado a disciplina de Redes de Computadores II&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula e Lucas Olini&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Entrega: 08/06/2018&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Recebe o endereco, porta e mensagem como parametro</span>
+    <span style="color: #008800; font-weight: bold">try</span>:
+        addr <span style="color: #333333">=</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">1</span>]
+        port <span style="color: #333333">=</span> <span style="color: #007020">int</span>(sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">2</span>])
+        numero_1 <span style="color: #333333">=</span> <span style="color: #007020">float</span>(sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">3</span>])
+        operacao <span style="color: #333333">=</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">4</span>]
+        numero_2 <span style="color: #333333">=</span> <span style="color: #007020">float</span>(sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">5</span>])
+
+	    <span style="color: #888888"># Insere os dados no log de execucao do cliente</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Endereco: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Porta: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Buffer: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (addr,port,<span style="color: #007020">str</span>(numero_1) <span style="color: #333333">+</span> operacao <span style="color: #333333">+</span> <span style="color: #007020">str</span>(numero_2)))
+
+    <span style="color: #888888"># Se os parametros estiverem incompletos, emite mensagem de erro</span>
+    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">IndexError</span>:
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;use: </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> addr port numero_1 operacao numero_2&#39;</span> <span style="color: #333333">%</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">0</span>]
+        sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">1</span>)
+
+    <span style="color: #888888"># Define o socket a ser usado na comunicacao</span>
+    sock <span style="color: #333333">=</span> socket<span style="color: #333333">.</span>socket(socket<span style="color: #333333">.</span>AF_INET, socket<span style="color: #333333">.</span>SOCK_DGRAM)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Estabeleceu o socket para comunicacao</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Define um tempo para o TIMEOUT do socket</span>
+    sock<span style="color: #333333">.</span>settimeout(<span style="color: #6600EE; font-weight: bold">0.2</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Definiu o timeout do socket para 0.2s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Define o TTL como 1, para que as mensagens nao passem do segmento local</span>
+    ttl <span style="color: #333333">=</span> struct<span style="color: #333333">.</span>pack(<span style="background-color: #fff0f0">&#39;b&#39;</span>, <span style="color: #0000DD; font-weight: bold">1</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Definiu o TTL para 1</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Define o grupo MULTICAST para transmitir, usando o TTL definido acima</span>
+    sock<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>IPPROTO_IP, socket<span style="color: #333333">.</span>IP_MULTICAST_TTL, ttl)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Definiu o grupo MULTICAST para transmitir</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+<span style="color: #008800; font-weight: bold">try</span>:
+    <span style="color: #888888"># Transmite os dados para o grupo MULTICAST</span>
+    <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;sending &quot;</span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&quot;&#39;</span> <span style="color: #333333">%</span> (<span style="color: #007020">str</span>(numero_1) <span style="color: #333333">+</span> operacao <span style="color: #333333">+</span> <span style="color: #007020">str</span>(numero_2))
+    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">2</span>, <span style="color: #007020">None</span>, numero_1, numero_2, operacao, <span style="color: #007020">None</span>)
+    mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+    sent <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>sendto(mensagem_serializada, (addr, port))
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Enviando: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Para: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Porta: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (<span style="color: #007020">str</span>(numero_1) <span style="color: #333333">+</span> operacao <span style="color: #333333">+</span> <span style="color: #007020">str</span>(numero_2),addr,port))
+
+    <span style="color: #888888"># Procura por respostas de todos os servidores</span>
+    <span style="color: #008800; font-weight: bold">while</span> <span style="color: #007020">True</span>:
+        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;waiting to receive&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Aguardando para receber</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        <span style="color: #008800; font-weight: bold">try</span>:
+            <span style="color: #888888"># Recebe os dados do servidor que respondeu</span>
+            data, server <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+            mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
+            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Recebeu: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">De: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (mensagem<span style="color: #333333">.</span>resultado,server))
+
+        <span style="color: #008800; font-weight: bold">except</span> socket<span style="color: #333333">.</span>timeout:
+            <span style="color: #888888"># Se der timeout, encerra a execucao do cliente</span>
+            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;timed out, no more responses&#39;</span>
+            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;TIMEOUT</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+            <span style="color: #008800; font-weight: bold">break</span>
+        <span style="color: #008800; font-weight: bold">else</span>:
+            <span style="color: #888888"># Se receber os dados com sucesso, printa para o usuario</span>
+            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;received &quot;</span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&quot; from </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (mensagem<span style="color: #333333">.</span>resultado, server)
+
+<span style="color: #008800; font-weight: bold">finally</span>:
+    <span style="color: #888888"># Ao final da execucao, fecha o socket e o arquivo de log</span>
+    <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;closing socket&#39;</span>
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Fechando o socket</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+    log<span style="color: #333333">.</span>close()
+    sock<span style="color: #333333">.</span>close()
+</pre></td></tr></table></div>
+
+
+<div class="targetDiv" id="div6" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ==========================================================</span>
+<span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
+<span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+<span style="color: #888888"># Entrega: 08/06/2018</span>
+<span style="color: #888888"># ==========================================================</span>
+Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
+Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
+Buffer: Hello World
+
+Estabeleceu o socket para comunicacao
+Definiu o timeout do socket para <span style="color: #6600EE; font-weight: bold">0.2</span>s
+Definiu o TTL para <span style="color: #0000DD; font-weight: bold">1</span>
+Definiu o grupo MULTICAST para transmitir
+
+Enviando: Hello World
+Para: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
+Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
+Aguardando para receber
+
+Recebeu: ack
+De: (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">1905</span>)
+Aguardando para receber
+TIMEOUT
+Fechando o socket
+</pre></div>
+
+</section>
+</body>
+</html>
