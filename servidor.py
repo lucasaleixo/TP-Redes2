@@ -21,7 +21,7 @@ PORTA_RESPOSTA = 4321
 
 # Definicao do objeto Mensagem
 class Mensagem(object):
-    tipo = None # 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Pedido Heartbeat; 4 - Resposta Hearbeat ; 5 - Calculo;  6 - Reposta Calculo
+    tipo = None # 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Mensagem Heartbeat; 5 - Calculo;  6 - Reposta Calculo
     id_servidor = None
     operacao = ""
     resultado = ""
@@ -60,6 +60,8 @@ class Servidor(object):
 def Servidor_Multicast(log):
     # Inicia a lista de servidores vazia
     servidor = Servidor([], None)
+    print("Inicializando servidor sem Id e com lista de servidores vazia\n")
+    log.write("Inicializando servidor sem Id e com lista de servidores vazia\n")
 
     # Mensagem inicial do tipo 1, para definir os IDs
     mensagem = Mensagem(1, None, None, None)
@@ -70,7 +72,7 @@ def Servidor_Multicast(log):
     servidor.socket_recebimento.settimeout(2)
     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
 
-    time_end = time.time() + 10
+    time_end = time.time() + 5
     # Loop para compor a lista de servidores
     while time_end > time.time():
         try:
@@ -131,7 +133,7 @@ def Servidor_Multicast(log):
 
 	# Define o timeout para o socket de recebimento
         servidor.socket_recebimento.settimeout(1)
-        hearbeat_timer = time.time() + 5
+        hearbeat_timer = time.time() + 3
         while hearbeat_timer > time.time():
             try:
                 data, addr = servidor.socket_recebimento.recvfrom(1024)
@@ -178,7 +180,7 @@ def Servidor_Multicast(log):
                             index = -1
                         if index != -1:
                             if (mensagem.operacao[index+1] == '0'):
-                                resultado_calculo = "Divisao por zero. Nao eh possivel calcular"
+                                resultado_calculo = "ERRO: Divisao por zero. Nao eh possivel calcular."
                             else:
                                 resultado_calculo = eval(mensagem.operacao)
                         else:
@@ -203,12 +205,12 @@ def Servidor_Multicast(log):
         mensagem_serializada = pickle.dumps(mensagem, 2)
         servidor.socket_recebimento.settimeout(2)
         servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
-        print >>sys.stderr, '\n5 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
-        log.write("\n5 segundos se passaram")
+        print >>sys.stderr, '\n3 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
+        log.write("\n3 segundos se passaram")
         log.write("\nAtualizando a lista de servidores ativos")
         for servi in servidor.lista_servidores:
             print(time.time() - servi[1])
-            if time.time() - servi[1] > 20:
+            if time.time() - servi[1] > 10:
                 servidor.lista_servidores.remove(servi)
         print(servidor.lista_servidores)
         servidor.socket_recebimento.settimeout(None)
@@ -216,21 +218,8 @@ def Servidor_Multicast(log):
 
 # Funcao main
 if __name__ == '__main__':
-    addr = ""
-    port = 0
-
     # Abre o arquivo log_servidor em modo de escrita
     log = open("log_servidor.txt","a")
-
-    # Opcao para receber o endereco e porta como parametro
-    try:
-        addr = sys.argv[1]
-        port = int(sys.argv[2])
-
-    # Se os parametros estiverem incompletos, emite mensagem de erro
-    except IndexError:
-        print 'Entrada: %s IP PORTA' % sys.argv[0]
-        sys.exit(1)
 
     # Se o arquivo do log de servidores estiver vazio
     if(os.stat("log_servidor.txt").st_size == 0):
@@ -243,9 +232,7 @@ if __name__ == '__main__':
 
     log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
     print 'Executando o servidor em %s:%d' % (socket.gethostbyname(socket.gethostname()), PORTA_MULTICAST)
-    log.write("Endereco IP (HOST): %s\n" % str(socket.gethostbyname(socket.gethostname())))
-    log.write("Servidor: %d\n" % 1)
-    log.write("Porta: %d\n\n" % PORTA_MULTICAST)
+    log.write("Porta Transmissao: %s\n" % str(PORTA_MULTICAST))
     log.close()
 
     # Passa o log e a tabela como parametro para a funcao do servidor
