@@ -164,7 +164,11 @@ def Servidor_Multicast(log):
 		            # Se for o lider, envia o resultado do calculo
                     if servidor_lider:
                         log.write("\n\nServidor lider identificado")
-                        resultado_calculo = eval(mensagem.operacao)
+                        index = mensagem.operacao.index("/")
+                        if (mensagem.operacao[index+1] == '0'):
+                            resultado_calculo = "Divisao por zero. Nao eh possivel calcular"
+                        else:
+                            resultado_calculo = eval(mensagem.operacao)
                         print >>sys.stderr, '\nEnviando resultado do calculo para o cliente.\nResultado = %s \n' % resultado_calculo
                         log.write("\nEnviando resultado do calculo para o cliente.\nResultado = %s \n" % resultado_calculo)
                         mensagem = Mensagem(6, servidor.servidor_id, None, resultado_calculo)
@@ -187,7 +191,7 @@ def Servidor_Multicast(log):
         servidor.socket_recebimento.settimeout(2)
         servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
         print >>sys.stderr, '\n5 segundos se passaram, iniciando processo para atualizar a lista de servidores ativos'
-        log.write("\n5 segundos se passaram") 
+        log.write("\n5 segundos se passaram")
         log.write("\nAtualizando a lista de servidores ativos")
 
         time_end = time.time() + 8
