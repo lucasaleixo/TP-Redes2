@@ -9,10 +9,14 @@ import struct
 import sys
 import pickle
 
+# Endereco e porta para recebimento
 ADDRESS = '224.1.1.1'
 PORTA_MULTICAST = 3333
+
+# Definicao da porta para resposta
 PORTA_RESPOSTA = 4321
 
+# Definicao do objeto Mensagem
 class Mensagem(object):
     tipo = None # 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Pedido Heartbeat; 4 - Resposta Hearbeat ; 5 - Calculo;  6 - Reposta Calculo
     id_servidor = None
@@ -21,6 +25,7 @@ class Mensagem(object):
     operacao = ""
     resultado = ""
 
+    # Inicializa os atributos da Mensagem
     def __init__(self, tipo, id_servidor=None, numero_1=None, numero_2=None, operacao=None, resultado=None):
         self.tipo = tipo
         self.id_servidor = id_servidor
@@ -39,59 +44,70 @@ if __name__ == '__main__':
     log.write("\n# Entrega: 08/06/2018")
     log.write("\n# ==========================================================\n")
 
-    # Recebe o endereco, porta e mensagem como parametro
+    # Recebe o endereco, porta, operacao e operandos como parametro
     try:
-        addr = sys.argv[1]
-        port = int(sys.argv[2])
-        numero_1 = float(sys.argv[3])
-        operacao = sys.argv[4]
-        numero_2 = float(sys.argv[5])
+        numero_1 = float(sys.argv[1])
+        operacao = sys.argv[2]
+        numero_2 = float(sys.argv[3])
 
-	    # Insere os dados no log de execucao do cliente
-        log.write("Endereco: %s\nPorta: %d\nBuffer: %s\n" % (addr,port,str(numero_1) + operacao + str(numero_2)))
+	# Insere os dados no log de execucao do cliente
+	log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
+	log.write("Endereco IP (CLIENTE): %s\n" % socket.gethostbyname(socket.gethostname()))
+        log.write("Operador 1: %s\n" % str(numero_1))
+	log.write("Operacao: %s\n" % str(operacao))
+	log.write("Operador 2: %s\n" % (numero_2))
 
     # Se os parametros estiverem incompletos, emite mensagem de erro
     except IndexError:
-        print 'use: %s addr port numero_1 operacao numero_2' % sys.argv[0]
+        print 'Entrada: %s OP1 OPERACAO OP2' % sys.argv[0]
         sys.exit(1)
 
     # Define o socket de recebimento, e conecta de acordo com a porta passada como parametro
-    ip_atual = socket.gethostbyname(socket.gethostname())
     socket_recebimento = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     socket_recebimento.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    log.write("\nEstabeleceu o socket para recebimento\n")
     socket_recebimento.bind(('', PORTA_RESPOSTA))
+
     # Define o socket de envio
     socket_envio = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     socket_envio.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)
-    log.write("\nEstabeleceu o socket para comunicacao\n")
-
+    log.write("\nEstabeleceu o socket para envio\n")
 
     # Transmite os dados para o grupo MULTICAST
-    print >>sys.stderr, 'sending "%s"' % operacao
+    print >>sys.stderr, 'Enviando "%s"' % operacao
     mensagem = Mensagem(5, None, numero_1, numero_2, operacao, None)
     mensagem_serializada = pickle.dumps(mensagem, 2)
     socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
     log.write("\nEnviando: %s\nPara: %s\nPorta: %d\n" % (str(numero_1) + operacao + str(numero_2),ADDRESS,PORTA_MULTICAST))
+
+    # Define o tempo de TIMEOUT para o socket de recebimento
+    log.write("\nDefiniu o timeout para a comunicacao\n")
     socket_recebimento.settimeout(2)
+
     # Procura por respostas de todos os servidores
     while True:
         print >>sys.stderr, '\nAguardando para receber'
         log.write("\nAguardando para receber\n")
+
         try:
             # Recebe os dados do servidor que respondeu
             data, server = socket_recebimento.recvfrom(1024)
+	    log.write("\nRecebeu o resultado da operacao\n")
             mensagem = pickle.loads(data)
-            log.write("\nRecebeu: %s\nDe: %s\n" % (mensagem.resultado, mensagem.id_servidor))
+
+            log.write("\nResultado: %s\nServidor que respondeu: %s\n" % (mensagem.resultado, mensagem.id_servidor))
             print >>sys.stderr, '\nRecebeu: %s\nDe: %s\n' % (mensagem.resultado, mensagem.id_servidor)
             break
+
         except socket.timeout:
             # Se der timeout, encerra a execucao do cliente
             print >>sys.stderr, 'timed out, no more responses'
-            log.write("TIMEOUT\n")
             socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+            log.write("TIMEOUT\n")
+
         else:
             # Se receber os dados com sucesso, printa para o usuario
-            print >>sys.stderr, 'received "%s" from %s' % (mensagem.resultado, server)
+            print >>sys.stderr, 'Recebeu "%s" de %s' % (mensagem.resultado, server)
 
     #
     #finally:
