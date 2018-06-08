@@ -20,17 +20,13 @@ PORTA_RESPOSTA = 4321
 class Mensagem(object):
     tipo = None # 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Pedido Heartbeat; 4 - Resposta Hearbeat ; 5 - Calculo;  6 - Reposta Calculo
     id_servidor = None
-    numero_1 = None
-    numero_2 = None
     operacao = ""
     resultado = ""
 
     # Inicializa os atributos da Mensagem
-    def __init__(self, tipo, id_servidor=None, numero_1=None, numero_2=None, operacao=None, resultado=None):
+    def __init__(self, tipo, id_servidor=None, operacao=None, resultado=None):
         self.tipo = tipo
         self.id_servidor = id_servidor
-        self.numero_1 = numero_1
-        self.numero_2 = numero_2
         self.operacao = operacao
         self.resultado = resultado
 
@@ -44,22 +40,18 @@ if __name__ == '__main__':
     log.write("\n# Entrega: 08/06/2018")
     log.write("\n# ==========================================================\n")
 
-    # Recebe o endereco, porta, operacao e operandos como parametro
+    # Recebe o endereco, porta, operacao como parametro
     try:
-        numero_1 = float(sys.argv[1])
-        operacao = sys.argv[2]
-        numero_2 = float(sys.argv[3])
+        operacao = sys.argv[1]
 
-	# Insere os dados no log de execucao do cliente
-	log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
-	log.write("Endereco IP (CLIENTE): %s\n" % socket.gethostbyname(socket.gethostname()))
-        log.write("Operador 1: %s\n" % str(numero_1))
-	log.write("Operacao: %s\n" % str(operacao))
-	log.write("Operador 2: %s\n" % (numero_2))
+        # Insere os dados no log de execucao do cliente
+        log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
+        log.write("Endereco IP (CLIENTE): %s\n" % socket.gethostbyname(socket.gethostname()))
+        log.write("Operacao: %s\n" % operacao)
 
     # Se os parametros estiverem incompletos, emite mensagem de erro
     except IndexError:
-        print 'Entrada: %s OP1 OPERACAO OP2' % sys.argv[0]
+        print 'Entrada: %s OPERACAO' % sys.argv[0]
         sys.exit(1)
 
     # Define o socket de recebimento, e conecta de acordo com a porta passada como parametro
@@ -74,11 +66,11 @@ if __name__ == '__main__':
     log.write("\nEstabeleceu o socket para envio\n")
 
     # Transmite os dados para o grupo MULTICAST
-    print >>sys.stderr, 'Enviando "%s"' % operacao
-    mensagem = Mensagem(5, None, numero_1, numero_2, operacao, None)
+    print >>sys.stderr, "\nEnviando: %s\nPara: %s\nPorta: %d\n" % (operacao, str(ADDRESS), PORTA_MULTICAST)
+    log.write("\nEnviando: %s\nPara: %s\nPorta: %d\n" % (operacao, str(ADDRESS), PORTA_MULTICAST))
+    mensagem = Mensagem(5, None, operacao, None)
     mensagem_serializada = pickle.dumps(mensagem, 2)
     socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
-    log.write("\nEnviando: %s\nPara: %s\nPorta: %d\n" % (str(numero_1) + operacao + str(numero_2),ADDRESS,PORTA_MULTICAST))
 
     # Define o tempo de TIMEOUT para o socket de recebimento
     log.write("\nDefiniu o timeout para a comunicacao\n")
@@ -92,11 +84,11 @@ if __name__ == '__main__':
         try:
             # Recebe os dados do servidor que respondeu
             data, server = socket_recebimento.recvfrom(1024)
-	    log.write("\nRecebeu o resultado da operacao\n")
+            log.write("\nRecebeu o resultado da operacao\n")
             mensagem = pickle.loads(data)
 
             log.write("\nResultado: %s\nServidor que respondeu: %s\n" % (mensagem.resultado, mensagem.id_servidor))
-            print >>sys.stderr, '\nRecebeu: %s\nDe: %s\n' % (mensagem.resultado, mensagem.id_servidor)
+            print >>sys.stderr, '\nResultado: %s\nServidor que respondeu: %s\n' % (mensagem.resultado, mensagem.id_servidor)
             break
 
         except socket.timeout:
