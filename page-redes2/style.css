@@ -29,3 +29,9 @@ li a:hover:not(.active) {
 .cnt {
     padding: 1%;    
 }
+
+#titulo {
+    font-family: "Lucida Console", Monaco, monospace;
+    text-align: center;
+    color: #ff009f;
+}
