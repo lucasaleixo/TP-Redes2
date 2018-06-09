@@ -52,20 +52,20 @@ class Servidor(object):
         mreq = struct.pack('4sl', socket.inet_aton(ADDRESS), socket.INADDR_ANY)
         self.socket_recebimento.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         print "Estabeleceu o socket para recebimento de mensagens\n"
-        log.write("Estabeleceu o socket para recebimento de mensagens\n")
+        log.write("\nEstabeleceu o socket para recebimento de mensagens\n")
 
         # Define o socket de envio
         self.socket_envio = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.socket_envio.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)
         print "Estabeleceu o socket para envio de mensagens\n"
-        log.write("Estabeleceu o socket para envio de mensagens\n")
+        log.write("\nEstabeleceu o socket para envio de mensagens\n")
 
 # Funcao principal do servidor
 def Servidor_Multicast(log):
     # Inicia a lista de servidores vazia
     servidor = Servidor([], None)
     print("Inicializando servidor sem Id e com lista de servidores vazia\n")
-    log.write("Inicializando servidor sem Id e com lista de servidores vazia\n")
+    log.write("\nInicializando servidor sem ID e com a lista de servidores vazia\n")
 
     # Mensagem inicial do tipo 1, para definir os IDs
     mensagem = Mensagem(1, None, None, None)
@@ -76,10 +76,10 @@ def Servidor_Multicast(log):
     servidor.socket_recebimento.settimeout(2)
     servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
     print "Enviando mensagem pedindo o Id dos outros servidores para popular a lista de servidores\n"
-    log.write("Enviando mensagem pedindo o Id dos outros servidores para popular a lista de servidores\n")
+    log.write("\nEnviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores\n")
 
     print "Aguardando 5 segundos para popular a lista...\n"
-    log.write("Aguardando 5 segundos para popular a lista...\n")
+    log.write("\nAguardando 5 segundos para popular a lista...\n")
     time_end = time.time() + 5
     # Loop para compor a lista de servidores. Rodando no maximo por 5 segundos
     while time_end > time.time():
@@ -102,15 +102,15 @@ def Servidor_Multicast(log):
     		            # Adiciona o servidor a lista de servidores
                         servidor.lista_servidores.append([mensagem.id_servidor, time.time()])
                         print "Recebeu Id = %s. Colocando este servidor na lista de servidores disponiveis\n" % mensagem.id_servidor
-                        log.write("Recebeu Id = %s. Colocando este servidor na lista de servidores disponiveis\n" % mensagem.id_servidor)
+                        log.write("\nRecebeu ID = %s. Colocando este servidor na lista de servidores disponiveis\n" % mensagem.id_servidor)
 	   # Se houver timeout, envia novamente. Se terminou o tempo de recebimento inicial, sai do loop
         except timeout:
             if time_end > time.time():
-                # Pia, nao coloca log aqui, pq eh zoado isso que to fazendo kkkkkk so apaga esse comentario dai
                 servidor.socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
           
     # Define o timeout para o socket de recebimento
     servidor.socket_recebimento.settimeout(None)
+    log.write("\nDefiniou o timeout para o socket de recebimento\n")
 
     # Printa a lista de servidores
     print(servidor.lista_servidores)
@@ -124,7 +124,7 @@ def Servidor_Multicast(log):
 
     # Se o maior ID for 0, a lista esta vazia
     elif (maior_id == 0):
-    	log.write("##########################################################\n")
+    	log.write("\n##########################################################\n")
         # Ainda nao tem nenhum servidor, este vai ser o servidor 1
         print >>sys.stderr, '\nNenhum servidor encontrado, atribuindo id 1 ao servidor'
         log.write("Nenhum servidor encontrado\n")
@@ -133,13 +133,13 @@ def Servidor_Multicast(log):
 
     mensagem = Mensagem(3, servidor.servidor_id, None, None)
     mensagem_serializada = pickle.dumps(mensagem, 2)
-    log.write("##########################################################\n")
+    log.write("##########################################################\n\n")
 
     # Loop de requisicoes e respostas
     while True:
         # Escuta no endereco e porta passados como parametro
         print >>sys.stderr, '\nAguardando para receber'
-        log.write("Aguardando para receber")
+        log.write("\nAguardando para receber\n")
 
 	# Define o timeout para o socket de recebimento
         servidor.socket_recebimento.settimeout(1)
@@ -173,6 +173,7 @@ def Servidor_Multicast(log):
 
                 # Calculo
                 elif (mensagem.tipo == 5):
+		    log.write("\nRecebeu uma nova expressao do cliente\n")
                     servidor_lider = True
 
 		            # Identifica o servidor lider para responder
@@ -240,9 +241,9 @@ if __name__ == '__main__':
     	log.write("\n# Entrega: 08/06/2018")
     	log.write("\n# ==========================================================\n\n")
 
-    log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
+    log.write("ENDERECO_IP (TRANSMISSAO): %s\n" % str(ADDRESS))
     print 'Executando o servidor em %s:%d' % (socket.gethostbyname(socket.gethostname()), PORTA_MULTICAST)
-    log.write("Porta Transmissao: %s\n" % str(PORTA_MULTICAST))
+    log.write("PORTA_MULTICAST: %s\n" % str(PORTA_MULTICAST))
     log.close()
 
     # Passa o log e a tabela como parametro para a funcao do servidor

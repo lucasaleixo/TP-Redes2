@@ -46,9 +46,9 @@ if __name__ == '__main__':
         operacao = sys.argv[1]
 
         # Insere os dados no log de execucao do cliente
-        log.write("Endereco IP (TRANSMISSAO): %s\n" % str(ADDRESS))
-        log.write("Porta de Transmissao: %s\n" % str(PORTA_MULTICAST))
-        log.write("Operacao: %s\n" % operacao)
+        log.write("\nENDERECO_IP (TRANSMISSAO): %s\n" % str(ADDRESS))
+        log.write("PORTA_MULTICAST: %s\n" % str(PORTA_MULTICAST))
+        log.write("EXPRESSAO: %s\n" % operacao)
 
     # Se o parametro estiver incompleto, emite mensagem de erro
     except IndexError:
@@ -60,39 +60,39 @@ if __name__ == '__main__':
     socket_recebimento.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     socket_recebimento.bind(('', PORTA_RESPOSTA))
     print "Estabeleceu o socket para recebimento de mensagens\n"
-    log.write("Estabeleceu o socket para recebimento de mensagens\n")
+    log.write("\nEstabeleceu o socket para recebimento de mensagens\n")
 
     # Define o socket de envio
     socket_envio = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     socket_envio.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)
     print "Estabeleceu o socket para envio de mensagens\n"
-    log.write("Estabeleceu o socket para envio de mensagens\n")
+    log.write("\nEstabeleceu o socket para envio de mensagens\n")
 
     # Transmite os dados para o grupo MULTICAST
     mensagem = Mensagem(5, None, operacao, None)
     mensagem_serializada = pickle.dumps(mensagem, 2)
     socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
     print "Enviando: %s\nPara: %s\nPorta: %d\n" % (operacao, str(ADDRESS), PORTA_MULTICAST)
-    log.write("Enviando: %s\nPara: %s\nPorta: %d\n" % (operacao, str(ADDRESS), PORTA_MULTICAST))
+    log.write("\nEnviando: %s\nPara: %s\nPorta: %d\n" % (operacao, str(ADDRESS), PORTA_MULTICAST))
 
     # Define o tempo de TIMEOUT para o socket de recebimento
     socket_recebimento.settimeout(2)
     print "Definiu o timeout da mensagem para 2 segundos\n"
-    log.write("Definiu o timeout da mensagem para 2 segundos\n")
+    log.write("\nDefiniu o timeout da mensagem para 2 segundos\n")
 
     # Procura por respostas de todos os servidores
     while True:
         print 'Aguardando a resposta do calculo...\n'
-        log.write("Aguardando a resposta do calculo...\n")
+        log.write("\nAguardando a resposta do calculo...\n")
 
         try:
             # Recebe os dados do servidor que respondeu
             data, server = socket_recebimento.recvfrom(1024)
             mensagem = pickle.loads(data)
-            log.write("Recebeu o resultado da operacao\n")
+            log.write("\nRecebeu o resultado da operacao\n")
             print "Recebeu o resultado da operacao\n"
 
-            log.write("------------\n")
+            log.write("\n------------\n")
             log.write("Resultado = %s\nId do servidor que respondeu: %s\n" % (mensagem.resultado, mensagem.id_servidor))
             print 'Resultado = %s\nId do servidor que respondeu: %s\n' % (mensagem.resultado, mensagem.id_servidor)
             log.write("------------\n")
@@ -101,5 +101,5 @@ if __name__ == '__main__':
         except socket.timeout:
             # Se der timeout, envia novamente a mensagem pedindo o calculo
             print 'TIMEOUT: Pedido de calculo nao respondido, reenviando a mensagem com a operacao requisitada...\n'
-            log.write("TIMEOUT: Pedido de calculo nao respondido, reenviando a mensagem com a operacao requisitada...\n")
+            log.write("\nTIMEOUT: Pedido de calculo nao respondido, reenviando a mensagem com a operacao requisitada...\n")
             socket_envio.sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
