@@ -112,8 +112,8 @@ def Servidor_Multicast(log):
     servidor.socket_recebimento.settimeout(None)
 
     # Printa a lista de servidores
-    print "\nLista de Servidores Disponiveis: " + servidor.lista_servidores
-    log.write("\nLista de Servidores Disponiveis: " + servidor.lista_servidores)
+    print "\nLista de Servidores Disponiveis: " + str(servidor.lista_servidores)
+    log.write("\nLista de Servidores Disponiveis: " + str(servidor.lista_servidores))
 
     # Se o maior ID nao for 0, a lista nao esta vazia
     if (maior_id != 0):
@@ -175,8 +175,8 @@ def Servidor_Multicast(log):
                                 print "\nServidor %s novo, adicionando a lista de servidores\n" % mensagem.id_servidor
                                 log.write("\nServidor %s novo, adicionando a lista de servidores\n" % mensagem.id_servidor)
                                 servidor.lista_servidores.append([mensagem.id_servidor, time.time()])
-                    print "Lista de servidores disponiveis: " + servidor.lista_servidores
-                    log.write("Lista de servidores disponiveis: " + servidor.lista_servidores)
+                    print "Lista de servidores disponiveis: " + str(servidor.lista_servidores)
+                    log.write("Lista de servidores disponiveis: " + str(servidor.lista_servidores))
 
                 # Calculo
                 elif (mensagem.tipo == 5):
@@ -230,25 +230,26 @@ def Servidor_Multicast(log):
                 print "Servidor ID = %s inativo por mais de 10 segundos, removendo o mesmo da lista de servidores\n" % servi[0]
                 log.write("Servidor ID = %s inativo por mais de 10 segundos, removendo o mesmo da lista de servidores\n" % servi[0])
                 servidor.lista_servidores.remove(servi)
-        print "Lista de servidores disponiveis: " + servidor.lista_servidores
-        log.write("Lista de servidores disponiveis: " + servidor.lista_servidores)
+        log.write("Apos limpeza dos inativos:\n")
+        print "Lista de servidores disponiveis: " + str(servidor.lista_servidores)
+        log.write("Lista de servidores disponiveis: " + str(servidor.lista_servidores))
         servidor.socket_recebimento.settimeout(None)
     log.write("##########################################################\n")  
 
 # Funcao main
 if __name__ == '__main__':
-    randomico = random.randrange(0,10)
+    randomico = random.randrange(0,1000)
     # Abre o arquivo log_servidor em modo de escrita
     log = open("log_servidor"+str(randomico)+".txt","a")
 
     # Se o arquivo do log de servidores estiver vazio
     if(os.stat("log_servidor"+str(randomico)+".txt").st_size == 0):
     	# Printa o cabecalho no log de execucao
-    	log.write("# ==========================================================")
+    	log.write("# ======================================================================")
     	log.write("\n# Projeto destinado a disciplina de Redes de Computadores II")
     	log.write("\n# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)")
     	log.write("\n# Entrega: 08/06/2018")
-    	log.write("\n# ==========================================================\n\n")
+    	log.write("\n# ======================================================================\n\n")
 
     log.write("ENDERECO_IP (TRANSMISSAO): %s\n" % str(ADDRESS))
     print 'Executando o servidor em %s:%d' % (socket.gethostbyname(socket.gethostname()), PORTA_MULTICAST)

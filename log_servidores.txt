@@ -1,0 +1,465 @@
+# ======================================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)
+# Entrega: 08/06/2018
+# Log SERVIDOR 1
+# ======================================================================
+
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Inicializando servidor sem ID e com a lista de servidores vazia
+
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando 5 segundos para popular a lista...
+
+Lista de Servidores Disponiveis: []
+
+Nenhum servidor encontrado, atribuindo o ID 1 ao servidor
+
+Aguardando o recebimento de alguma mensagem...
+
+Novo servidor entrando na rede, enviando o id deste servidor(ID = 1)
+Lista de servidores disponiveis: []
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 novo, adicionando a lista de servidores
+Lista de servidores disponiveis: [[2, 1528518304.013386]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518304.013386]]
+
+Aguardando o recebimento de alguma mensagem...
+
+Novo servidor entrando na rede, enviando o id deste servidor(ID = 1)
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518307.562274]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518310.567525], [3, 1528518310.56733]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518310.567525], [3, 1528518313.572139]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: 5+10
+Servidor lider identificado, ID = 1
+Enviando resultado do calculo para o cliente.
+Resultado = 15 
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518313.572504], [3, 1528518316.689028]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518319.694474], [3, 1528518319.694253]]
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518322.699309], [3, 1528518319.694253]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/0
+Servidor lider identificado, ID = 1
+Enviando resultado do calculo para o cliente.
+Resultado = ERRO: Divisao por zero. Nao eh possivel calcular. 
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518322.699309], [3, 1528518322.699517]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/3.0
+Servidor lider identificado, ID = 1
+Enviando resultado do calculo para o cliente.
+Resultado = 3.33333333333 
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518332.894983], [3, 1528518332.894686]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10*4
+Servidor lider identificado, ID = 1
+Enviando resultado do calculo para o cliente.
+Resultado = 40 
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Aguardando o recebimento de alguma mensagem...
+Lista de servidores disponiveis: [[2, 1528518336.640748], [3, 1528518336.640272]]
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518339.64554], [3, 1528518336.640272]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: 80-230
+Servidor lider identificado, ID = 1
+Enviando resultado do calculo para o cliente.
+Resultado = -150 
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518342.650174], [3, 1528518342.64995]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518342.650174], [3, 1528518345.815377]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID = 2 inativo por mais de 10 segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: [[2, 1528518345.815525]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+> ENCERRADA EXECUCAO
+==============================================================================================================================
+# ======================================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)
+# Entrega: 08/06/2018
+# Log SERVIDOR 2
+# ======================================================================
+
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Inicializando servidor sem ID e com a lista de servidores vazia
+
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando 5 segundos para popular a lista...
+
+Recebeu ID = 1. Colocando este servidor na lista de servidores disponiveis
+
+Lista de Servidores Disponiveis: [[1, 1528518302.010493]]
+
+Ja existem outros servidores no grupo Multicast, atribuindo id = 2 ao servidor
+
+Aguardando o recebimento de alguma mensagem...
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518305.015181]]
+
+Novo servidor entrando na rede, enviando o id deste servidor(ID = 2)
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518308.564515]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 novo, adicionando a lista de servidores
+Lista de servidores disponiveis: [[1, 1528518308.564515], [3, 1528518310.567312]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518311.56906], [3, 1528518310.567312]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518314.574313], [3, 1528518313.572256]]
+
+Recebeu um pedido de calculo do cliente, expressao: 5+10
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518320.696384], [3, 1528518319.694358]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518320.696384], [3, 1528518319.694358]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/0
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518324.227433], [3, 1528518322.699423]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518324.227433], [3, 1528518322.699423]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518327.232963], [3, 1528518326.230556]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/3.0
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518327.232963], [3, 1528518326.230556]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518330.89166], [3, 1528518332.8948]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518333.896939], [3, 1528518332.8948]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10*4
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 3 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518333.896939], [3, 1528518336.640382]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[1, 1528518337.642617], [3, 1528518336.640382]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518340.647081], [3, 1528518339.645851]]
+
+Recebeu um pedido de calculo do cliente, expressao: 80-230
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[1, 1528518343.812296], [3, 1528518342.65005]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+> ENCERRADA EXECUCAO
+==============================================================================================================================
+# ======================================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)
+# Entrega: 08/06/2018
+# Log SERVIDOR 3
+# ======================================================================
+
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Inicializando servidor sem ID e com a lista de servidores vazia
+
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando 5 segundos para popular a lista...
+
+Recebeu ID = 2. Colocando este servidor na lista de servidores disponiveis
+
+Recebeu ID = 1. Colocando este servidor na lista de servidores disponiveis
+
+Lista de Servidores Disponiveis: [[2, 1528518305.559382], [1, 1528518305.559475]]
+
+Ja existem outros servidores no grupo Multicast, atribuindo id = 3 ao servidor
+
+Aguardando o recebimento de alguma mensagem...
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518310.567408], [1, 1528518305.559475]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518310.567408], [1, 1528518311.569095]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518310.567408], [1, 1528518311.569095]]
+
+Recebeu um pedido de calculo do cliente, expressao: 5+10
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518313.572452], [1, 1528518314.574335]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518316.689533], [1, 1528518314.574335]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518316.689533], [1, 1528518317.691384]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/0
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518322.699378], [1, 1528518324.227434]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518322.699378], [1, 1528518324.227434]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518326.230507], [1, 1528518324.227434]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10.0/3.0
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518326.230507], [1, 1528518327.23299]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518329.889668], [1, 1528518327.23299]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518329.889668], [1, 1528518330.891695]]
+
+Recebeu um pedido de calculo do cliente, expressao: 10*4
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518332.895064], [1, 1528518333.896966]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518336.640448], [1, 1528518333.896966]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518336.640448], [1, 1528518337.642617]]
+
+Recebeu um pedido de calculo do cliente, expressao: 80-230
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518342.650099], [1, 1528518343.812297]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[2, 1528518342.650099], [1, 1528518343.812297]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 2 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518345.815485], [1, 1528518343.812297]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...
+Servidor 1 ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[2, 1528518342.650099], [1, 1528518343.812297]]
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID = 2 inativo por mais de 10 segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: [[1, 1528518343.812297]]
+
+Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+3 segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID = 1 inativo por mais de 10 segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: []
+
+Recebeu um pedido de calculo do cliente, expressao: 10+2
+Servidor lider identificado, ID = 3
+Enviando resultado do calculo para o cliente.
+Resultado = 12
+> ENCERRADA EXECUCAO

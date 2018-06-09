@@ -1,0 +1,152 @@
+# ======================================================================
+# Projeto destinado a disciplina de Redes de Computadores II
+# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)
+# Entrega: 08/06/2018
+# Log Cliente
+# ======================================================================
+> python cliente.py
+ERRO: Formato de entrada incorreto. Deve ser enviada apenas a expressao para ser calculada, sem espacos.
+
+> python cliente.py 5+10 
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 5+10
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 5+10
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------
+Resultado = 15
+Id do servidor que respondeu: 1
+------------------------------------
+
+> python cliente.py 10.0/0.0 
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 10.0/0
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 10.0/0
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------------------------------
+Resultado = ERRO: Divisao por zero. Nao eh possivel calcular.
+Id do servidor que respondeu: 1
+------------------------------------------------------------
+
+> python cliente.py 10.0/3.0
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 10.0/3.0
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 10.0/3.0
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------
+Resultado = 3.33333333333
+Id do servidor que respondeu: 1
+------------------------------------
+
+> python cliente.py 10*4 
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 10*4
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 10*4
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------
+Resultado = 40
+Id do servidor que respondeu: 1
+------------------------------------
+
+> python cliente.py 80-230
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 80-230
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 80-230
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------
+Resultado = -150
+Id do servidor que respondeu: 1
+------------------------------------
+
+> python cliente.py 10+2
+ENDERECO_IP (TRANSMISSAO): 225.1.1.1
+PORTA_MULTICAST: 3333
+EXPRESSAO: 10+2
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: 10+2
+Para: 225.1.1.1
+Porta: 3333
+
+Definiu o timeout da mensagem para 2 segundos
+
+Aguardando a resposta do calculo...
+
+Recebeu o resultado da operacao
+
+------------------------------------
+Resultado = 12
+Id do servidor que respondeu: 3
+------------------------------------

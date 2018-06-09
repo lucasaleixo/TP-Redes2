@@ -34,12 +34,12 @@ class Mensagem(object):
 if __name__ == '__main__':
     # Abre o arquivo log_cliente.txt em modo de escrita e printa o cabecalho
     log = open("log_cliente.txt","a")
-    log.write("\n# ==========================================================")
+    log.write("\n# ======================================================================")
     log.write("\n# Projeto destinado a disciplina de Redes de Computadores II")
     log.write("\n# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)")
     log.write("\n# Entrega: 08/06/2018")
     log.write("\n# Log Cliente")
-    log.write("\n# ==========================================================\n")
+    log.write("\n# ======================================================================\n")
 
     # Recebe a operacao como parametro
     try:
@@ -53,6 +53,7 @@ if __name__ == '__main__':
     # Se o parametro estiver incompleto, emite mensagem de erro
     except IndexError:
         print 'ERRO: Formato de entrada incorreto. Deve ser enviada apenas a expressao para ser calculada, sem espacos.'
+        log.write('ERRO: Formato de entrada incorreto. Deve ser enviada apenas a expressao para ser calculada, sem espacos.')
         sys.exit(1)
 
     # Define o socket de recebimento, e conecta de acordo com a porta de resposta para o cliente
