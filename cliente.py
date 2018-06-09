@@ -1,6 +1,6 @@
 # ========================================================================
  # Projeto destinado a disciplina de Redes de Computadores II
- # Autores: Lucas Aleixo de Paula e Lucas Olini
+ # Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)
  # Entrega: 08/06/2018
  # ======================================================================== 
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     log = open("log_cliente.txt","a")
     log.write("\n# ==========================================================")
     log.write("\n# Projeto destinado a disciplina de Redes de Computadores II")
-    log.write("\n# Autores: Lucas Aleixo de Paula e Lucas Olini")
+    log.write("\n# Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)")
     log.write("\n# Entrega: 08/06/2018")
     log.write("\n# Log Cliente")
     log.write("\n# ==========================================================\n")
