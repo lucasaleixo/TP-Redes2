@@ -10,7 +10,7 @@
 <ul>
   <li><a class="active">Home</a></li>
   <li><a class="showSingle" target="1">O Problema</a></li>
-  <li><a class="showSingle" target="2">A Solução</a></li>
+  <li><a class="showSingle" target="2">Relatório</a></li>
   <li><a class="showSingle" target="3">Servidor</a></li>
   <li><a class="showSingle" target="4">LOG (Servidor)</a></li>
   <li><a class="showSingle" target="5">Cliente</a></li>
@@ -30,9 +30,105 @@
   <img src="descricao.PNG"></img>
 </div>
 
-<div class="targetDiv" id="div2" >
-<h1 style="text-align: center;">REPORT GOES HERE</h1>
+<div class="targetDiv" id="div2">
+
+<div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">========================================================================
+ # Projeto destinado a disciplina de Redes de Computadores II
+ # Autores: Lucas Aleixo de Paula e Lucas Olini
+ # Entrega: 08/06/2018
+ ========================================================================
+
+
+RELATÓRIO DO TRABALHO PRÁTICO
+
+
+Inicialmente, devemos entender o problema proposto: Implementar uma 
+calculadora remota altamente-disponível, baseada em um grupo multicast 
+de N servidores, no qual apenas o servidor com o menor identificador (lider) 
+atende as requisições.
+
+Para a solução, realizamos uma pesquisa mais aprofundada sobre o assunto. 
+Chegamos a conclusão que, para implementar o multicast IP, todos os servidores 
+deveriam transmitir para o endereço de um grupo, de modo que a mensagem seja 
+entregue a múltiplos destinatários. Além disso, todos os servidores devem utilizar 
+uma mesma porta para efetuar o envio e recebimento de mensagens. 
+
+Para implementar essa ideia, definimos as seguintes constantes:
+
+ADDRESS = &#39;225.1.1.1&#39;
+PORTA_MULTICAST = 3333
+
+Outro problema é tratar os diferentes tipos de mensagens necessários para a 
+execução correta do sistema de multicast. Por exemplo, para a implementação 
+do Heartbeat, os servidores devem ser capazes de identificar a requisição e 
+agir adequadamente. Para resolver esse problema, definimos um objeto 
+Mensagem, contendo os seguintes atributos:
+
+class Mensagem(object):
+    tipo = None
+    id_servidor = None
+    operacao = &quot;&quot;
+    resultado = &quot;&quot;
+
+O atributo “tipo” pode apresentar os seguintes valores: 
+
+1 - Pegar id inicial
+2 - Resposta id inicial
+3 - Mensagem Heartbeat
+5 - Calculo
+6 - Reposta Calculo
+
+Além disso, para definir qual será o servidor líder, responsável 
+por efetuar os cálculos e atender às requisições do cliente, é necessário 
+armazenar os dados de todos os servidores do grupo. Para isso, definimos o 
+objeto servidor da seguinte maneira:
+
+class Servidor(object):
+    servidor_id = None
+    lista_servidores = []
+
+Cada servidor contém seu próprio identificador e, ao início da execução, a 
+lista de servidores está vazia. A mensagem inicial deve ser do tipo 1, para 
+identificar que existe um novo servidor no grupo, obter os identificadores 
+dos demais servidores, e adicionar esses dados a lista. 
+
+Além disso, os dados na lista de servidores são utilizados pelo procedimento 
+de Heartbeat, que funciona da seguinte maneira: A cada 3 segundos, o servidor 
+envia uma mensagem do tipo 3 contendo seu ID para que os outros servidores do 
+grupo de multicast possam atualizar suas listas de servidores. Então, os 
+demais servidores do grupo recebem a mensagem e atualizam a lista. 
+Ao enviarem a mensagem de Heartbeat, os servidores verificam suas listas 
+de servidores buscando IDs que não são atualizados a mais de 10 segundos, 
+tirando-os da lista ja que estao inativos e nao sao mais elegíveis 
+para serem lideres.
+
+Para implementar a calculadora, utilizamos a funcao eval(), disponivel 
+na linguagem Python. O cliente envia uma mensagem do tipo 5 para o grupo 
+multicast. Então, cada servidor vai checar sua própria lista de servidores 
+e verificar se eh o lider ou não. Esta verificação é feita comparando o 
+próprio ID com os IDs presentes na lista, se o próprio for menor que todos 
+da lista, então este servidor é o líder e irá executar o cálculo e 
+responder para o cliente. A resposta ao cliente é feita em uma 
+segunda porta: PORTA_RESPOSTA, a qual é dedicada as respostas ao cliente.
+
+Nos testes realizados, as operações elementares 
+(adicao, subtracao, multiplicacao e divisao) foram 
+utilizadas com números inteiros e reais, e todas 
+foram avaliadas corretamente. 
+
+Comandos de Execução
+
+Para executar o servidor, deve-se rodar o comando:
+	python servidor.py
+
+E para executar o cliente, deve-se rodar o comando:
+	python cliente.py {operacao desejada}
+	Ex: python cliente.py 1+2
+</pre></div>
+
 </div>
+
+
 
 <div class="targetDiv" id="div3" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%">  1
   2
@@ -222,9 +318,82 @@
 186
 187
 188
-189</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
  <span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
- <span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+ <span style="color: #888888"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
  <span style="color: #888888"># Entrega: 08/06/2018</span>
  <span style="color: #888888"># ======================================================================== </span>
 
@@ -235,229 +404,727 @@
 <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
 <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">pickle</span>
 <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">time</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">random</span>
 
+<span style="color: #888888"># Endereco e porta para recebimento</span>
+ADDRESS <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;225.1.1.1&#39;</span>
+PORTA_MULTICAST <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">3333</span>
+
+<span style="color: #888888"># Porta para o envio da resposta</span>
+PORTA_RESPOSTA <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">4321</span>
+
+<span style="color: #888888"># Definicao do objeto Mensagem</span>
 <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Mensagem</span>(<span style="color: #007020">object</span>):
-    tipo <span style="color: #333333">=</span> <span style="color: #007020">None</span> <span style="color: #888888"># 1 - Heartbeat ; 2 - Calculo;</span>
+    tipo <span style="color: #333333">=</span> <span style="color: #007020">None</span> <span style="color: #888888"># 1 - Pegar id inicial; 2 - Resposta id inicial; 3 - Mensagem Heartbeat; 5 - Calculo;  6 - Reposta Calculo</span>
     id_servidor <span style="color: #333333">=</span> <span style="color: #007020">None</span>
-    numero_1 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
-    numero_2 <span style="color: #333333">=</span> <span style="color: #007020">None</span>
     operacao <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
     resultado <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
 
-    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, tipo, id_servidor<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_1<span style="color: #333333">=</span><span style="color: #007020">None</span>, numero_2<span style="color: #333333">=</span><span style="color: #007020">None</span>, operacao<span style="color: #333333">=</span><span style="color: #007020">None</span>, resultado<span style="color: #333333">=</span><span style="color: #007020">None</span>):
+    <span style="color: #888888"># Inicializa os atributos da Mensagem</span>
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, tipo, id_servidor<span style="color: #333333">=</span><span style="color: #007020">None</span>, operacao<span style="color: #333333">=</span><span style="color: #007020">None</span>, resultado<span style="color: #333333">=</span><span style="color: #007020">None</span>):
         <span style="color: #007020">self</span><span style="color: #333333">.</span>tipo <span style="color: #333333">=</span> tipo
         <span style="color: #007020">self</span><span style="color: #333333">.</span>id_servidor <span style="color: #333333">=</span> id_servidor
-        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_1 <span style="color: #333333">=</span> numero_1
-        <span style="color: #007020">self</span><span style="color: #333333">.</span>numero_2 <span style="color: #333333">=</span> numero_2
         <span style="color: #007020">self</span><span style="color: #333333">.</span>operacao <span style="color: #333333">=</span> operacao
-	<span style="color: #007020">self</span><span style="color: #333333">.</span>resultado <span style="color: #333333">=</span> resultado
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>resultado <span style="color: #333333">=</span> resultado
 
+<span style="color: #888888"># Definicao do objeto Servidor</span>
 <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Servidor</span>(<span style="color: #007020">object</span>):
     servidor_id <span style="color: #333333">=</span> <span style="color: #007020">None</span>
     lista_servidores <span style="color: #333333">=</span> []
-
+  
+    <span style="color: #888888"># Inicializa os atributos do Servidor</span>
     <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, lista_servidores<span style="color: #333333">=</span>[], servidor_id<span style="color: #333333">=</span><span style="color: #007020">None</span>):
         <span style="color: #007020">self</span><span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> servidor_id
         <span style="color: #007020">self</span><span style="color: #333333">.</span>lista_servidores <span style="color: #333333">=</span> lista_servidores
 
+        <span style="color: #888888"># Define o socket de recebimento, e conecta de acordo com a porta do multicast</span>
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_recebimento <span style="color: #333333">=</span> socket<span style="color: #333333">.</span>socket(socket<span style="color: #333333">.</span>AF_INET, socket<span style="color: #333333">.</span>SOCK_DGRAM, socket<span style="color: #333333">.</span>IPPROTO_UDP)
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>SOL_SOCKET, socket<span style="color: #333333">.</span>SO_REUSEADDR, <span style="color: #0000DD; font-weight: bold">1</span>)
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>bind((<span style="background-color: #fff0f0">&#39;&#39;</span>, PORTA_MULTICAST))
+
+        <span style="color: #888888"># Define o grupo MULTICAST, e adiciona o servidor ao grupo de MULTICAST</span>
+        mreq <span style="color: #333333">=</span> struct<span style="color: #333333">.</span>pack(<span style="background-color: #fff0f0">&#39;4sl&#39;</span>, socket<span style="color: #333333">.</span>inet_aton(ADDRESS), socket<span style="color: #333333">.</span>INADDR_ANY)
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>IPPROTO_IP, socket<span style="color: #333333">.</span>IP_ADD_MEMBERSHIP, mreq)
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Estabeleceu o socket para recebimento de mensagens</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Estabeleceu o socket para recebimento de mensagens</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+        <span style="color: #888888"># Define o socket de envio</span>
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_envio <span style="color: #333333">=</span> socket<span style="color: #333333">.</span>socket(socket<span style="color: #333333">.</span>AF_INET, socket<span style="color: #333333">.</span>SOCK_DGRAM, socket<span style="color: #333333">.</span>IPPROTO_UDP)
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>IPPROTO_IP, socket<span style="color: #333333">.</span>IP_MULTICAST_TTL, <span style="color: #0000DD; font-weight: bold">10</span>)
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Estabeleceu o socket para envio de mensagens</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Estabeleceu o socket para envio de mensagens</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
 <span style="color: #888888"># Funcao principal do servidor</span>
-<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">mcast_server</span>(addr, port, pid, log, tabela):
-    <span style="color: #888888"># Define o socket, e conecta de acordo com a porta passada como parametro</span>
-    sock <span style="color: #333333">=</span> socket<span style="color: #333333">.</span>socket(socket<span style="color: #333333">.</span>AF_INET, socket<span style="color: #333333">.</span>SOCK_DGRAM)
-    sock<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>SOL_SOCKET, socket<span style="color: #333333">.</span>SO_REUSEADDR, <span style="color: #0000DD; font-weight: bold">1</span>)
-    sock<span style="color: #333333">.</span>bind((<span style="background-color: #fff0f0">&#39;&#39;</span>, port))
-
-    <span style="color: #888888"># Define o grupo MULTICAST, e adiciona o servidor ao grupo de MULTICAST</span>
-    mreq <span style="color: #333333">=</span> struct<span style="color: #333333">.</span>pack(<span style="background-color: #fff0f0">&#39;4sl&#39;</span>, socket<span style="color: #333333">.</span>inet_aton(addr), socket<span style="color: #333333">.</span>INADDR_ANY)
-    sock<span style="color: #333333">.</span>setsockopt(socket<span style="color: #333333">.</span>IPPROTO_IP, socket<span style="color: #333333">.</span>IP_ADD_MEMBERSHIP, mreq)
-
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">Servidor_Multicast</span>(log):
+    <span style="color: #888888"># Inicia a lista de servidores vazia</span>
     servidor <span style="color: #333333">=</span> Servidor([], <span style="color: #007020">None</span>)
-    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
+    <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&quot;Inicializando servidor sem Id e com lista de servidores vazia</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Inicializando servidor sem ID e com a lista de servidores vazia</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Mensagem inicial do tipo 1, para definir os IDs</span>
+    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
     mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
-    sent <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>sendto(mensagem_serializada, (addr, port))
-    sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
     maior_id <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
-    t_end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">2</span>
-    <span style="color: #008800; font-weight: bold">while</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">&lt;</span> t_end:
+
+    <span style="color: #888888"># Define o timeout para o socket e transmite na PORTA_MULTICAST</span>
+    servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
+    servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Enviando mensagem pedindo o Id dos outros servidores para popular a lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Aguardando 5 segundos para popular a lista...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Aguardando 5 segundos para popular a lista...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+    time_end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">5</span>
+    <span style="color: #888888"># Loop para compor a lista de servidores. Rodando no maximo por 5 segundos</span>
+    <span style="color: #008800; font-weight: bold">while</span> time_end <span style="color: #333333">&gt;</span> time<span style="color: #333333">.</span>time():
         <span style="color: #008800; font-weight: bold">try</span>:
-            data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+	        <span style="color: #888888"># Recebe os dados atraves do socket de recebimento</span>
+            data, addr <span style="color: #333333">=</span> servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
             mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
-            <span style="color: #008800; font-weight: bold">if</span> maior_id <span style="color: #333333">&lt;</span> mensagem<span style="color: #333333">.</span>id_servidor:
-                maior_id <span style="color: #333333">=</span> mensagem<span style="color: #333333">.</span>id_servidor
-            servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append((mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()))   
+
+	        <span style="color: #888888"># Se o tipo da mensagem for 2, verifica o ID</span>
+            <span style="color: #008800; font-weight: bold">if</span> mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">2</span>:
+                <span style="color: #008800; font-weight: bold">if</span> mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">!=</span> <span style="color: #007020">None</span>:
+                    <span style="color: #888888"># Verifica se este ID ja existe na lista de servidores disponiveis</span>
+                    <span style="color: #008800; font-weight: bold">if</span> <span style="color: #007020">any</span>(mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #000000; font-weight: bold">in</span> servidor <span style="color: #008800; font-weight: bold">for</span> servidor <span style="color: #000000; font-weight: bold">in</span> servidor<span style="color: #333333">.</span>lista_servidores):
+                        <span style="color: #008800; font-weight: bold">pass</span>
+                    <span style="color: #008800; font-weight: bold">else</span>:
+    		            <span style="color: #888888"># Compara o ID do servidor com o maior ID</span>
+                        <span style="color: #008800; font-weight: bold">if</span> maior_id <span style="color: #333333">&lt;</span> mensagem<span style="color: #333333">.</span>id_servidor:
+                            maior_id <span style="color: #333333">=</span> mensagem<span style="color: #333333">.</span>id_servidor
+
+    		            <span style="color: #888888"># Adiciona o servidor a lista de servidores</span>
+                        servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append([mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()])
+                        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Recebeu Id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">. Colocando este servidor na lista de servidores disponiveis</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Recebeu ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">. Colocando este servidor na lista de servidores disponiveis</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor)
+	   <span style="color: #888888"># Se houver timeout, envia novamente. Se terminou o tempo de recebimento inicial, sai do loop</span>
         <span style="color: #008800; font-weight: bold">except</span> timeout:
-            <span style="color: #888888"># Fez a busca por 2 segundos por servidores existentes checando seus ids</span>
-            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores&#39;</span>
-            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)       
+            <span style="color: #008800; font-weight: bold">if</span> time_end <span style="color: #333333">&gt;</span> time<span style="color: #333333">.</span>time():
+                servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+          
+    servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #007020">None</span>)
+
+    <span style="color: #888888"># Printa a lista de servidores</span>
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Lista de Servidores Disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Lista de Servidores Disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores))
+
+    <span style="color: #888888"># Se o maior ID nao for 0, a lista nao esta vazia</span>
     <span style="color: #008800; font-weight: bold">if</span> (maior_id <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>):
         <span style="color: #888888"># Atribuindo id do servidor</span>
-        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Atribuindo id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ao servidor&#39;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Ja existem outros servidores no grupo Multicast, atribuindo id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ao servidor&#39;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Ja existem outros servidores no grupo Multicast, atribuindo id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ao servidor&#39;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>))
         servidor<span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> maior_id <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>
+
+    <span style="color: #888888"># Se o maior ID for 0, a lista esta vazia</span>
     <span style="color: #008800; font-weight: bold">elif</span> (maior_id <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span>):
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">##########################################################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
         <span style="color: #888888"># Ainda nao tem nenhum servidor, este vai ser o servidor 1</span>
-        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo id 1 ao servidor&#39;</span>
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo id 1 ao servidor</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo id 1 ao servidor&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhum servidor encontrado, atribuindo o ID 1 ao servidor</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
         servidor<span style="color: #333333">.</span>servidor_id <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">################################################&quot;</span>)        
-    sock<span style="color: #333333">.</span>settimeout(<span style="color: #007020">None</span>)
-    <span style="color: #008800; font-weight: bold">try</span>:
-        <span style="color: #888888"># Loop de requisicoes e respostas</span>
-        <span style="color: #008800; font-weight: bold">while</span> <span style="color: #007020">True</span>:
-            <span style="color: #888888"># Escuta no endereco e porta passados como parametro</span>
-            <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">waiting to receive message&#39;</span>
-            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">waiting to receive message</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
-            sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">10</span>)
+
+    <span style="color: #888888"># Envia mensagem indicando aos outros servidores que entrou no grupo Multicast</span>
+    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">3</span>, servidor<span style="color: #333333">.</span>servidor_id, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
+    mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+    servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;##########################################################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">&quot;</span>)
+
+    <span style="color: #888888"># Loop de requisicoes e respostas</span>
+    <span style="color: #008800; font-weight: bold">while</span> <span style="color: #007020">True</span>:
+        <span style="color: #888888"># Escuta no endereco e porta passados como parametro</span>
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Aguardando o recebimento de alguma mensagem...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Aguardando o recebimento de alguma mensagem...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&#39;</span>)
+
+	<span style="color: #888888"># Define o timeout para o socket de recebimento</span>
+        servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">1</span>)
+        hearbeat_timer <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">3</span>
+        <span style="color: #008800; font-weight: bold">while</span> hearbeat_timer <span style="color: #333333">&gt;</span> time<span style="color: #333333">.</span>time():
             <span style="color: #008800; font-weight: bold">try</span>:
-                data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
+                data, addr <span style="color: #333333">=</span> servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
                 mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
 
-                <span style="color: #888888"># Ao receber uma nova mensagem, registra no log de execucao</span>
-                <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;received </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> bytes from </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (<span style="color: #007020">len</span>(data), addr)
-                log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;received </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> bytes from </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (<span style="color: #007020">len</span>(data), addr))
-                <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, data
-                log<span style="color: #333333">.</span>write(data)	  
-                <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">2</span>):
-                    <span style="color: #888888"># Se o servidor tiver o MENOR process_id, responde para o cliente</span>
-                    <span style="color: #008800; font-weight: bold">if</span>(<span style="color: #007020">int</span>(tabela[<span style="color: #0000DD; font-weight: bold">0</span>]) <span style="color: #333333">==</span> pid):
-                        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;sending acknowledgement to&#39;</span>, addr
-                        <span style="color: #888888"># Regristra a resposta no log de execucao dos servidores</span>
-                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">sending acknowledgement to </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(addr))
-                        mensagem<span style="color: #333333">.</span>resultado <span style="color: #333333">=</span>  <span style="color: #007020">eval</span>(<span style="color: #007020">str</span>(mensagem<span style="color: #333333">.</span>numero_1) <span style="color: #333333">+</span> mensagem<span style="color: #333333">.</span>operacao <span style="color: #333333">+</span> <span style="color: #007020">str</span>(mensagem<span style="color: #333333">.</span>numero_2))
-                        mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
-                        sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
-                <span style="color: #008800; font-weight: bold">elif</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>):   
-                    <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">chegou pedido de id, este servidor id = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> servidor<span style="color: #333333">.</span>servidor_id        
-                    mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">=</span> servidor<span style="color: #333333">.</span>servidor_id
+                <span style="color: #888888"># Novo servidor entrando na rede</span>
+                <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>):
+                    mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">2</span>, servidor<span style="color: #333333">.</span>servidor_id, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
                     mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
-                    sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
+                    servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+                    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Novo servidor entrando na rede, enviando o id deste servidor(ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">)</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>servidor_id)
+                    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Novo servidor entrando na rede, enviando o id deste servidor(ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">)</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>servidor_id))
+
+                <span style="color: #888888"># Mensagem de Heartbeat</span>
+                <span style="color: #008800; font-weight: bold">elif</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">3</span>):
+                    <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">!=</span> <span style="color: #007020">None</span>):
+                        <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">!=</span> servidor<span style="color: #333333">.</span>servidor_id):
+                            servidor_novo <span style="color: #333333">=</span> <span style="color: #007020">True</span>
+                            <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>
+                            log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores...</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+                            <span style="color: #008800; font-weight: bold">for</span> serv <span style="color: #000000; font-weight: bold">in</span> servidor<span style="color: #333333">.</span>lista_servidores:
+                                <span style="color: #008800; font-weight: bold">if</span> serv[<span style="color: #0000DD; font-weight: bold">0</span>] <span style="color: #333333">==</span> mensagem<span style="color: #333333">.</span>id_servidor:
+                                    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidor </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ja existente na lista, atualizando timestamp</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor
+                                    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidor </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> ja existente na lista, atualizando timestamp</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor)
+                                    serv[<span style="color: #0000DD; font-weight: bold">1</span>] <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time()
+                                    servidor_novo <span style="color: #333333">=</span> <span style="color: #007020">False</span>
+                            <span style="color: #008800; font-weight: bold">if</span> servidor_novo:
+                                <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidor </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> novo, adicionando a lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor
+                                log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidor </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> novo, adicionando a lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>id_servidor)
+                                servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append([mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()])
+                    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Lista de servidores disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores)
+                    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Lista de servidores disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores))
+
+                <span style="color: #888888"># Calculo</span>
+                <span style="color: #008800; font-weight: bold">elif</span> (mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">5</span>):
+		    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Recebeu um pedido de calculo do cliente, expressao: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> mensagem<span style="color: #333333">.</span>operacao)
+                    servidor_lider <span style="color: #333333">=</span> <span style="color: #007020">True</span>
+
+		    <span style="color: #888888"># Identifica o servidor lider para responder</span>
+                    <span style="color: #008800; font-weight: bold">for</span> serv <span style="color: #000000; font-weight: bold">in</span> servidor<span style="color: #333333">.</span>lista_servidores:
+                        <span style="color: #008800; font-weight: bold">if</span> serv[<span style="color: #0000DD; font-weight: bold">0</span>] <span style="color: #333333">&lt;</span> servidor<span style="color: #333333">.</span>servidor_id:
+                            servidor_lider <span style="color: #333333">=</span> <span style="color: #007020">False</span>
+                            <span style="color: #008800; font-weight: bold">break</span>
+
+		    <span style="color: #888888"># Se for o lider, envia o resultado do calculo</span>
+                    <span style="color: #008800; font-weight: bold">if</span> servidor_lider:
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">Servidor lider identificado, ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> servidor<span style="color: #333333">.</span>servidor_id)
+                        <span style="color: #008800; font-weight: bold">try</span>:
+                            index <span style="color: #333333">=</span> mensagem<span style="color: #333333">.</span>operacao<span style="color: #333333">.</span>index(<span style="background-color: #fff0f0">&quot;/&quot;</span>)
+                        <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">ValueError</span>:
+                            index <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>
+                        <span style="color: #008800; font-weight: bold">if</span> index <span style="color: #333333">!=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>:
+                            <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>operacao[index<span style="color: #333333">+</span><span style="color: #0000DD; font-weight: bold">1</span>] <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&#39;0&#39;</span>):
+                                resultado_calculo <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;ERRO: Divisao por zero. Nao eh possivel calcular.&quot;</span>
+                            <span style="color: #008800; font-weight: bold">else</span>:
+                                resultado_calculo <span style="color: #333333">=</span> <span style="color: #007020">eval</span>(mensagem<span style="color: #333333">.</span>operacao)
+                        <span style="color: #008800; font-weight: bold">else</span>:
+                            resultado_calculo <span style="color: #333333">=</span> <span style="color: #007020">eval</span>(mensagem<span style="color: #333333">.</span>operacao)
+                        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Enviando resultado do calculo para o cliente.</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Resultado = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> resultado_calculo
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Enviando resultado do calculo para o cliente.</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Resultado = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> resultado_calculo)
+                        mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">6</span>, servidor<span style="color: #333333">.</span>servidor_id, <span style="color: #007020">None</span>, resultado_calculo)
+                        mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+                        servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_RESPOSTA))
+                    <span style="color: #008800; font-weight: bold">else</span>:
+                        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">Esse servidor NAO e o lider&#39;</span>
+                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">Esse servidor NAO e o lider&quot;</span>)
+
             <span style="color: #008800; font-weight: bold">except</span> timeout:
-                servidor<span style="color: #333333">.</span>lista_servidores <span style="color: #333333">=</span> []
-                mensagem<span style="color: #333333">.</span>tipo <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>
-                mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
-                sock<span style="color: #333333">.</span>sendto(mensagem_serializada, addr)
-                sock<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
-                t_end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">2</span>
-                <span style="color: #008800; font-weight: bold">while</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">&lt;</span> t_end:
-                    <span style="color: #008800; font-weight: bold">try</span>:
-                        data, addr <span style="color: #333333">=</span> sock<span style="color: #333333">.</span>recvfrom(<span style="color: #0000DD; font-weight: bold">1024</span>)
-                        mensagem <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>loads(data)
-                        <span style="color: #008800; font-weight: bold">if</span> (mensagem<span style="color: #333333">.</span>id_servidor <span style="color: #333333">!=</span> <span style="color: #007020">None</span>):
-                            servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>append((mensagem<span style="color: #333333">.</span>id_servidor, time<span style="color: #333333">.</span>time()))   
-                        <span style="color: #008800; font-weight: bold">print</span> servidor<span style="color: #333333">.</span>lista_servidores
-                    <span style="color: #008800; font-weight: bold">except</span> timeout:
-                        <span style="color: #888888"># Fez a busca por 2 segundos por servidores existentes checando seus ids</span>
-                        <span style="color: #008800; font-weight: bold">print</span> <span style="color: #333333">&gt;&gt;</span>sys<span style="color: #333333">.</span>stderr, <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores&#39;</span>
-                        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Servidores descobertos e salvos na lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
-                <span style="color: #008800; font-weight: bold">print</span> servidor<span style="color: #333333">.</span>lista_servidores
+                <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&#39;</span>
+                log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Nenhuma mensagem recebida em 1 segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&#39;</span>)
+        servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #007020">None</span>)
 
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">################################################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)  
-
-    <span style="color: #888888"># Ao encerrar a execucao, fecha o servidor</span>
-    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">KeyboardInterrupt</span>:
-        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;done&#39;</span>
-        sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">0</span>)
+        <span style="color: #888888"># Envia Id para atualizar lista de servidores e limpa a propria lista</span>
+        mensagem <span style="color: #333333">=</span> Mensagem(<span style="color: #0000DD; font-weight: bold">3</span>, servidor<span style="color: #333333">.</span>servidor_id, <span style="color: #007020">None</span>, <span style="color: #007020">None</span>)
+        mensagem_serializada <span style="color: #333333">=</span> pickle<span style="color: #333333">.</span>dumps(mensagem, <span style="color: #0000DD; font-weight: bold">2</span>)
+        servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #0000DD; font-weight: bold">2</span>)
+        servidor<span style="color: #333333">.</span>socket_envio<span style="color: #333333">.</span>sendto(mensagem_serializada, (ADDRESS, PORTA_MULTICAST))
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">3 segundos se passaram, enviando mensagem de heartbeat&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&#39;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">3 segundos se passaram, enviando mensagem de heartbeat&#39;</span>)
+        <span style="color: #008800; font-weight: bold">for</span> servi <span style="color: #000000; font-weight: bold">in</span> servidor<span style="color: #333333">.</span>lista_servidores:
+            <span style="color: #008800; font-weight: bold">print</span>(time<span style="color: #333333">.</span>time() <span style="color: #333333">-</span> servi[<span style="color: #0000DD; font-weight: bold">1</span>])
+            <span style="color: #008800; font-weight: bold">if</span> time<span style="color: #333333">.</span>time() <span style="color: #333333">-</span> servi[<span style="color: #0000DD; font-weight: bold">1</span>] <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">10</span>:
+                <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Servidor ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> inativo por mais de 10 segundos, removendo o mesmo da lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> servi[<span style="color: #0000DD; font-weight: bold">0</span>]
+                log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Servidor ID = </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> inativo por mais de 10 segundos, removendo o mesmo da lista de servidores</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> servi[<span style="color: #0000DD; font-weight: bold">0</span>])
+                servidor<span style="color: #333333">.</span>lista_servidores<span style="color: #333333">.</span>remove(servi)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Apos limpeza dos inativos:</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&quot;Lista de servidores disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores)
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Lista de servidores disponiveis: &quot;</span> <span style="color: #333333">+</span> <span style="color: #007020">str</span>(servidor<span style="color: #333333">.</span>lista_servidores))
+        servidor<span style="color: #333333">.</span>socket_recebimento<span style="color: #333333">.</span>settimeout(<span style="color: #007020">None</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;##########################################################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)  
 
 <span style="color: #888888"># Funcao main</span>
 <span style="color: #008800; font-weight: bold">if</span> __name__ <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&#39;__main__&#39;</span>:
-
+    randomico <span style="color: #333333">=</span> random<span style="color: #333333">.</span>randrange(<span style="color: #0000DD; font-weight: bold">0</span>,<span style="color: #0000DD; font-weight: bold">1000</span>)
     <span style="color: #888888"># Abre o arquivo log_servidor em modo de escrita</span>
-    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
-    addr <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;&quot;</span>
-    port <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
-    <span style="color: #888888"># Opcao para receber o endereco e porta como parametro</span>
-    <span style="color: #008800; font-weight: bold">try</span>:
-        addr <span style="color: #333333">=</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">1</span>]
-        port <span style="color: #333333">=</span> <span style="color: #007020">int</span>(sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">2</span>])
+    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor&quot;</span><span style="color: #333333">+</span><span style="color: #007020">str</span>(randomico)<span style="color: #333333">+</span><span style="background-color: #fff0f0">&quot;.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
 
-    <span style="color: #888888"># Se os parametros estiverem incompletos, emite mensagem de erro</span>
-    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">IndexError</span>:
-        <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;use: </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0"> addr port&#39;</span> <span style="color: #333333">%</span> sys<span style="color: #333333">.</span>argv[<span style="color: #0000DD; font-weight: bold">0</span>]
-        sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">1</span>)
+    <span style="color: #888888"># Se o arquivo do log de servidores estiver vazio</span>
+    <span style="color: #008800; font-weight: bold">if</span>(os<span style="color: #333333">.</span>stat(<span style="background-color: #fff0f0">&quot;log_servidor&quot;</span><span style="color: #333333">+</span><span style="color: #007020">str</span>(randomico)<span style="color: #333333">+</span><span style="background-color: #fff0f0">&quot;.txt&quot;</span>)<span style="color: #333333">.</span>st_size <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span>):
+    	<span style="color: #888888"># Printa o cabecalho no log de execucao</span>
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;# ======================================================================&quot;</span>)
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Projeto destinado a disciplina de Redes de Computadores II&quot;</span>)
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)&quot;</span>)
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Entrega: 08/06/2018&quot;</span>)
+    	log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ======================================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">&quot;</span>)
 
-    <span style="color: #888888"># Com o endereco definido, registra o PROCESS_ID da instancia</span>
-    pid <span style="color: #333333">=</span> os<span style="color: #333333">.</span>getpid()
-
-    <span style="color: #888888"># Arquivo temporario, usado para armazenar os PROCESS_ID</span>
-    f <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;servidores.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
-    f<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> pid)
-    f<span style="color: #333333">.</span>close()
-
-    <span style="color: #888888"># Le os dados do arquivo, e armazena em uma tabela</span>
-    <span style="color: #008800; font-weight: bold">with</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;servidores.txt&quot;</span>, <span style="background-color: #fff0f0">&quot;r&quot;</span>) <span style="color: #008800; font-weight: bold">as</span> servidores:
-        tabela <span style="color: #333333">=</span> []
-        <span style="color: #008800; font-weight: bold">for</span> line <span style="color: #000000; font-weight: bold">in</span> servidores:
-            tabela<span style="color: #333333">.</span>append(line)
-
-    <span style="color: #888888"># Se o PROCESS_ID da instancia for o menor, insere o cabecalho no log</span>
-    <span style="color: #008800; font-weight: bold">if</span>(<span style="color: #007020">int</span>(tabela[<span style="color: #0000DD; font-weight: bold">0</span>]) <span style="color: #333333">==</span> pid):
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;# ==========================================================&quot;</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Projeto destinado a disciplina de Redes de Computadores II&quot;</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula e Lucas Olini&quot;</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Entrega: 08/06/2018&quot;</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
-        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;########################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)        
-
-    <span style="color: #888888"># Apos o cabecalho, os dados dos demais servidores sao inseridos no log</span>
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Endereco: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">Porta: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> (addr,port))
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;Process ID: </span><span style="background-color: #eeeeee">%d</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> pid)
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;########################</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)        
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;ENDERECO_IP (TRANSMISSAO): </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(ADDRESS))
+    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;Executando o servidor em </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">:</span><span style="background-color: #eeeeee">%d</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (socket<span style="color: #333333">.</span>gethostbyname(socket<span style="color: #333333">.</span>gethostname()), PORTA_MULTICAST)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;PORTA_MULTICAST: </span><span style="background-color: #eeeeee">%s</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span> <span style="color: #333333">%</span> <span style="color: #007020">str</span>(PORTA_MULTICAST))
     log<span style="color: #333333">.</span>close()
 
-    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;running server on </span><span style="background-color: #eeeeee">%s</span><span style="background-color: #fff0f0">:</span><span style="background-color: #eeeeee">%d</span><span style="background-color: #fff0f0">&#39;</span> <span style="color: #333333">%</span> (addr, port)
-    <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;Process ID: &#39;</span>, pid
-
     <span style="color: #888888"># Passa o log e a tabela como parametro para a funcao do servidor</span>
-    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
-    mcast_server(addr, port, pid, log, tabela)
+    log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_servidor&quot;</span><span style="color: #333333">+</span><span style="color: #007020">str</span>(randomico)<span style="color: #333333">+</span><span style="background-color: #fff0f0">&quot;.txt&quot;</span>, <span style="background-color: #fff0f0">&quot;a&quot;</span>)
+    Servidor_Multicast(log)
     log<span style="color: #333333">.</span>close()
 </pre></td></tr></table></div>
 
-<div class="targetDiv" id="div4" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ==========================================================</span>
-<span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
-<span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
-<span style="color: #888888"># Entrega: 08/06/2018</span>
-<span style="color: #888888"># ==========================================================</span>
-<span style="color: #888888">########################</span>
-Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
-Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
-Process ID: <span style="color: #0000DD; font-weight: bold">7860</span>
-<span style="color: #888888">########################</span>
-Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
-Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
-Process ID: <span style="color: #0000DD; font-weight: bold">7861</span>
-<span style="color: #888888">########################</span>
-Endereco: <span style="color: #6600EE; font-weight: bold">225.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>
-Porta: <span style="color: #0000DD; font-weight: bold">1905</span>
-Process ID: <span style="color: #0000DD; font-weight: bold">7862</span>
-<span style="color: #888888">########################</span>
+ 
 
-<span style="color: #888888">################################################</span>
-waiting to receive message
-received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
-Hello World
-sending acknowledgement to (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
 
-<span style="color: #888888">################################################</span>
+<div class="targetDiv" id="div4" style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic"># ======================================================================</span>
+<span style="color: #408080; font-style: italic"># Projeto destinado a disciplina de Redes de Computadores II</span>
+<span style="color: #408080; font-style: italic"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
+<span style="color: #408080; font-style: italic"># Entrega: 08/06/2018</span>
+<span style="color: #408080; font-style: italic"># Log SERVIDOR 1</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
 
-waiting to receive message
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
 
-<span style="color: #888888">################################################</span>
-waiting to receive message
-received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
-Hello World
-<span style="color: #888888">################################################</span>
+Estabeleceu o socket para recebimento de mensagens
 
-waiting to receive message
+Estabeleceu o socket para envio de mensagens
 
-<span style="color: #888888">################################################</span>
-waiting to receive message
-received <span style="color: #0000DD; font-weight: bold">11</span> <span style="color: #007020">bytes</span> <span style="color: #008800; font-weight: bold">from</span> (<span style="background-color: #fff0f0">&#39;172.17.0.19&#39;</span>, <span style="color: #0000DD; font-weight: bold">39060</span>)
-Hello World
-<span style="color: #888888">################################################</span>
+Inicializando servidor sem ID e com a lista de servidores vazia
 
-waiting to receive message
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando <span style="color: #666666">5</span> segundos para popular a lista<span style="color: #666666">...</span>
+
+Lista de Servidores Disponiveis: []
+
+Nenhum servidor encontrado, atribuindo o ID <span style="color: #666666">1</span> ao servidor
+
+Aguardando o recebimento de alguma mensagem<span style="color: #666666">...</span>
+
+Novo servidor entrando na rede, enviando o <span style="color: #008000">id</span> deste servidor(ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>)
+Lista de servidores disponiveis: []
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> novo, adicionando a lista de servidores
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518304.013386</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518304.013386</span>]]
+
+Aguardando o recebimento de alguma mensagem<span style="color: #666666">...</span>
+
+Novo servidor entrando na rede, enviando o <span style="color: #008000">id</span> deste servidor(ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>)
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518307.562274</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518310.567525</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518310.56733</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518310.567525</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518313.572139</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">5+10</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">15</span> 
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518313.572504</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518316.689028</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518319.694474</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518319.694253</span>]]
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518322.699309</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518319.694253</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/0</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> ERRO: Divisao por zero<span style="color: #666666">.</span> Nao eh possivel calcular<span style="color: #666666">.</span> 
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518322.699309</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518322.699517</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/3.0</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">3.33333333333</span> 
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518332.894983</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518332.894686</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10*4</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">40</span> 
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Aguardando o recebimento de alguma mensagem<span style="color: #666666">...</span>
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518336.640748</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518336.640272</span>]]
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518339.64554</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518336.640272</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">80-230</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">1</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">-150</span> 
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518342.650174</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518342.64995</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518342.650174</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518345.815377</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID <span style="color: #666666">=</span> <span style="color: #666666">2</span> inativo por mais de <span style="color: #666666">10</span> segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518345.815525</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+<span style="color: #666666">&gt;</span> ENCERRADA EXECUCAO
+<span style="color: #666666">==============================================================================================================================</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
+<span style="color: #408080; font-style: italic"># Projeto destinado a disciplina de Redes de Computadores II</span>
+<span style="color: #408080; font-style: italic"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
+<span style="color: #408080; font-style: italic"># Entrega: 08/06/2018</span>
+<span style="color: #408080; font-style: italic"># Log SERVIDOR 2</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
+
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Inicializando servidor sem ID e com a lista de servidores vazia
+
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando <span style="color: #666666">5</span> segundos para popular a lista<span style="color: #666666">...</span>
+
+Recebeu ID <span style="color: #666666">=</span> <span style="color: #666666">1.</span> Colocando este servidor na lista de servidores disponiveis
+
+Lista de Servidores Disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518302.010493</span>]]
+
+Ja existem outros servidores no grupo Multicast, atribuindo <span style="color: #008000">id</span> <span style="color: #666666">=</span> <span style="color: #666666">2</span> ao servidor
+
+Aguardando o recebimento de alguma mensagem<span style="color: #666666">...</span>
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518305.015181</span>]]
+
+Novo servidor entrando na rede, enviando o <span style="color: #008000">id</span> deste servidor(ID <span style="color: #666666">=</span> <span style="color: #666666">2</span>)
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518308.564515</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> novo, adicionando a lista de servidores
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518308.564515</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518310.567312</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518311.56906</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518310.567312</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518314.574313</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518313.572256</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">5+10</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518320.696384</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518319.694358</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518320.696384</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518319.694358</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/0</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518324.227433</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518322.699423</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518324.227433</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518322.699423</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518327.232963</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518326.230556</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/3.0</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518327.232963</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518326.230556</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518330.89166</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518332.8948</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518333.896939</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518332.8948</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10*4</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">3</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518333.896939</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518336.640382</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518337.642617</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518336.640382</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518340.647081</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518339.645851</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">80-230</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812296</span>], [<span style="color: #666666">3</span>, <span style="color: #666666">1528518342.65005</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">&gt;</span> ENCERRADA EXECUCAO
+<span style="color: #666666">==============================================================================================================================</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
+<span style="color: #408080; font-style: italic"># Projeto destinado a disciplina de Redes de Computadores II</span>
+<span style="color: #408080; font-style: italic"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
+<span style="color: #408080; font-style: italic"># Entrega: 08/06/2018</span>
+<span style="color: #408080; font-style: italic"># Log SERVIDOR 3</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
+
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Inicializando servidor sem ID e com a lista de servidores vazia
+
+Enviando mensagem pedindo o ID dos outros servidores para popular a lista de servidores
+
+Aguardando <span style="color: #666666">5</span> segundos para popular a lista<span style="color: #666666">...</span>
+
+Recebeu ID <span style="color: #666666">=</span> <span style="color: #666666">2.</span> Colocando este servidor na lista de servidores disponiveis
+
+Recebeu ID <span style="color: #666666">=</span> <span style="color: #666666">1.</span> Colocando este servidor na lista de servidores disponiveis
+
+Lista de Servidores Disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518305.559382</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518305.559475</span>]]
+
+Ja existem outros servidores no grupo Multicast, atribuindo <span style="color: #008000">id</span> <span style="color: #666666">=</span> <span style="color: #666666">3</span> ao servidor
+
+Aguardando o recebimento de alguma mensagem<span style="color: #666666">...</span>
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518310.567408</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518305.559475</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518310.567408</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518311.569095</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518310.567408</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518311.569095</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">5+10</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518313.572452</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518314.574335</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518316.689533</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518314.574335</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518316.689533</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518317.691384</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/0</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518322.699378</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518324.227434</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518322.699378</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518324.227434</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518326.230507</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518324.227434</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10.0/3.0</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518326.230507</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518327.23299</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518329.889668</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518327.23299</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518329.889668</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518330.891695</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10*4</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518332.895064</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518333.896966</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518336.640448</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518333.896966</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518336.640448</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518337.642617</span>]]
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">80-230</span>
+Esse servidor NAO e o lider
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518342.650099</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812297</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518342.650099</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812297</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">2</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518345.815485</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812297</span>]]
+
+Recebeu mensagem de Heartbeat, checando se o servidor enviado ja esta na lista de servidores<span style="color: #666666">...</span>
+Servidor <span style="color: #666666">1</span> ja existente na lista, atualizando timestamp
+Lista de servidores disponiveis: [[<span style="color: #666666">2</span>, <span style="color: #666666">1528518342.650099</span>], [<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812297</span>]]
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID <span style="color: #666666">=</span> <span style="color: #666666">2</span> inativo por mais de <span style="color: #666666">10</span> segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: [[<span style="color: #666666">1</span>, <span style="color: #666666">1528518343.812297</span>]]
+
+Nenhuma mensagem recebida em <span style="color: #666666">1</span> segundo, checando se ja passou o tempo para envio do heartbeat e limpeza da lista de servidores
+
+<span style="color: #666666">3</span> segundos se passaram, enviando mensagem de heartbeat
+Apos limpeza dos inativos:
+Servidor ID <span style="color: #666666">=</span> <span style="color: #666666">1</span> inativo por mais de <span style="color: #666666">10</span> segundos, removendo o mesmo da lista de servidores
+Lista de servidores disponiveis: []
+
+Recebeu um pedido de calculo do cliente, expressao: <span style="color: #666666">10+2</span>
+Servidor lider identificado, ID <span style="color: #666666">=</span> <span style="color: #666666">3</span>
+Enviando resultado do calculo para o cliente<span style="color: #666666">.</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">12</span>
+<span style="color: #666666">&gt;</span> ENCERRADA EXECUCAO
 </pre></div>
+
 
 <div class="targetDiv" id="div5" style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%">  1
   2
@@ -563,9 +1230,10 @@ waiting to receive message
 102
 103
 104
-105</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
+105
+106</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># ========================================================================</span>
  <span style="color: #888888"># Projeto destinado a disciplina de Redes de Computadores II</span>
- <span style="color: #888888"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+ <span style="color: #888888"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
  <span style="color: #888888"># Entrega: 08/06/2018</span>
  <span style="color: #888888"># ======================================================================== </span>
 
@@ -599,12 +1267,12 @@ PORTA_RESPOSTA <span style="color: #333333">=</span> <span style="color: #0000DD
 <span style="color: #008800; font-weight: bold">if</span> __name__ <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&#39;__main__&#39;</span>:
     <span style="color: #888888"># Abre o arquivo log_cliente.txt em modo de escrita e printa o cabecalho</span>
     log <span style="color: #333333">=</span> <span style="color: #007020">open</span>(<span style="background-color: #fff0f0">&quot;log_cliente.txt&quot;</span>,<span style="background-color: #fff0f0">&quot;a&quot;</span>)
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ======================================================================&quot;</span>)
     log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Projeto destinado a disciplina de Redes de Computadores II&quot;</span>)
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula e Lucas Olini&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)&quot;</span>)
     log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Entrega: 08/06/2018&quot;</span>)
     log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># Log Cliente&quot;</span>)
-    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ==========================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
+    log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&quot;</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0"># ======================================================================</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n</span><span style="background-color: #fff0f0">&quot;</span>)
 
     <span style="color: #888888"># Recebe a operacao como parametro</span>
     <span style="color: #008800; font-weight: bold">try</span>:
@@ -618,6 +1286,7 @@ PORTA_RESPOSTA <span style="color: #333333">=</span> <span style="color: #0000DD
     <span style="color: #888888"># Se o parametro estiver incompleto, emite mensagem de erro</span>
     <span style="color: #008800; font-weight: bold">except</span> <span style="color: #FF0000; font-weight: bold">IndexError</span>:
         <span style="color: #008800; font-weight: bold">print</span> <span style="background-color: #fff0f0">&#39;ERRO: Formato de entrada incorreto. Deve ser enviada apenas a expressao para ser calculada, sem espacos.&#39;</span>
+        log<span style="color: #333333">.</span>write(<span style="background-color: #fff0f0">&#39;ERRO: Formato de entrada incorreto. Deve ser enviada apenas a expressao para ser calculada, sem espacos.&#39;</span>)
         sys<span style="color: #333333">.</span>exit(<span style="color: #0000DD; font-weight: bold">1</span>)
 
     <span style="color: #888888"># Define o socket de recebimento, e conecta de acordo com a porta de resposta para o cliente</span>
@@ -671,22 +1340,27 @@ PORTA_RESPOSTA <span style="color: #333333">=</span> <span style="color: #0000DD
 </pre></td></tr></table></div>
 
 
-<div class="targetDiv" id="div6" style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic"># ==========================================================</span>
+
+
+<div class="targetDiv" id="div6" style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic"># ======================================================================</span>
 <span style="color: #408080; font-style: italic"># Projeto destinado a disciplina de Redes de Computadores II</span>
-<span style="color: #408080; font-style: italic"># Autores: Lucas Aleixo de Paula e Lucas Olini</span>
+<span style="color: #408080; font-style: italic"># Autores: Lucas Aleixo de Paula(GRR20153408) e Lucas Olini(GRR20157108)</span>
 <span style="color: #408080; font-style: italic"># Entrega: 08/06/2018</span>
 <span style="color: #408080; font-style: italic"># Log Cliente</span>
-<span style="color: #408080; font-style: italic"># ==========================================================</span>
+<span style="color: #408080; font-style: italic"># ======================================================================</span>
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py
+ERRO: Formato de entrada incorreto<span style="color: #666666">.</span> Deve ser enviada apenas a expressao para ser calculada, sem espacos<span style="color: #666666">.</span>
 
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">5+10</span> 
 ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
 PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">2+2</span>
+EXPRESSAO: <span style="color: #666666">5+10</span>
 
 Estabeleceu o socket para recebimento de mensagens
 
 Estabeleceu o socket para envio de mensagens
 
-Enviando: <span style="color: #666666">2+2</span>
+Enviando: <span style="color: #666666">5+10</span>
 Para: <span style="color: #666666">225.1.1.1</span>
 Porta: <span style="color: #666666">3333</span>
 
@@ -696,20 +1370,21 @@ Aguardando a resposta do calculo<span style="color: #666666">...</span>
 
 Recebeu o resultado da operacao
 
-<span style="color: #666666">------------</span>
-Resultado <span style="color: #666666">=</span> <span style="color: #666666">4</span>
+<span style="color: #666666">------------------------------------</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">15</span>
 Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
+<span style="color: #666666">------------------------------------</span>
 
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">10.0/0.0</span> 
 ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
 PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">8-3</span>
+EXPRESSAO: <span style="color: #666666">10.0/0</span>
 
 Estabeleceu o socket para recebimento de mensagens
 
 Estabeleceu o socket para envio de mensagens
 
-Enviando: <span style="color: #666666">8-3</span>
+Enviando: <span style="color: #666666">10.0/0</span>
 Para: <span style="color: #666666">225.1.1.1</span>
 Porta: <span style="color: #666666">3333</span>
 
@@ -719,103 +1394,108 @@ Aguardando a resposta do calculo<span style="color: #666666">...</span>
 
 Recebeu o resultado da operacao
 
-<span style="color: #666666">------------</span>
-Resultado <span style="color: #666666">=</span> <span style="color: #666666">5</span>
-Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
-
-ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
-PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">4*4</span>
-
-Estabeleceu o socket para recebimento de mensagens
-
-Estabeleceu o socket para envio de mensagens
-
-Enviando: <span style="color: #666666">4*4</span>
-Para: <span style="color: #666666">225.1.1.1</span>
-Porta: <span style="color: #666666">3333</span>
-
-Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
-
-Aguardando a resposta do calculo<span style="color: #666666">...</span>
-
-Recebeu o resultado da operacao
-
-<span style="color: #666666">------------</span>
-Resultado <span style="color: #666666">=</span> <span style="color: #666666">16</span>
-Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
-
-ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
-PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">25/5</span>
-
-Estabeleceu o socket para recebimento de mensagens
-
-Estabeleceu o socket para envio de mensagens
-
-Enviando: <span style="color: #666666">25/5</span>
-Para: <span style="color: #666666">225.1.1.1</span>
-Porta: <span style="color: #666666">3333</span>
-
-Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
-
-Aguardando a resposta do calculo<span style="color: #666666">...</span>
-
-Recebeu o resultado da operacao
-
-<span style="color: #666666">------------</span>
-Resultado <span style="color: #666666">=</span> <span style="color: #666666">5</span>
-Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
-
-ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
-PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">20.0/4.0</span>
-
-Estabeleceu o socket para recebimento de mensagens
-
-Estabeleceu o socket para envio de mensagens
-
-Enviando: <span style="color: #666666">20.0/4.0</span>
-Para: <span style="color: #666666">225.1.1.1</span>
-Porta: <span style="color: #666666">3333</span>
-
-Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
-
-Aguardando a resposta do calculo<span style="color: #666666">...</span>
-
-Recebeu o resultado da operacao
-
-<span style="color: #666666">------------</span>
-Resultado <span style="color: #666666">=</span> <span style="color: #666666">5.0</span>
-Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
-
-ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
-PORTA_MULTICAST: <span style="color: #666666">3333</span>
-EXPRESSAO: <span style="color: #666666">10/0</span>
-
-Estabeleceu o socket para recebimento de mensagens
-
-Estabeleceu o socket para envio de mensagens
-
-Enviando: <span style="color: #666666">10/0</span>
-Para: <span style="color: #666666">225.1.1.1</span>
-Porta: <span style="color: #666666">3333</span>
-
-Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
-
-Aguardando a resposta do calculo<span style="color: #666666">...</span>
-
-Recebeu o resultado da operacao
-
-<span style="color: #666666">------------</span>
+<span style="color: #666666">------------------------------------------------------------</span>
 Resultado <span style="color: #666666">=</span> ERRO: Divisao por zero<span style="color: #666666">.</span> Nao eh possivel calcular<span style="color: #666666">.</span>
 Id do servidor que respondeu: <span style="color: #666666">1</span>
-<span style="color: #666666">------------</span>
+<span style="color: #666666">------------------------------------------------------------</span>
+
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">10.0/3.0</span>
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+EXPRESSAO: <span style="color: #666666">10.0/3.0</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: <span style="color: #666666">10.0/3.0</span>
+Para: <span style="color: #666666">225.1.1.1</span>
+Porta: <span style="color: #666666">3333</span>
+
+Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
+
+Aguardando a resposta do calculo<span style="color: #666666">...</span>
+
+Recebeu o resultado da operacao
+
+<span style="color: #666666">------------------------------------</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">3.33333333333</span>
+Id do servidor que respondeu: <span style="color: #666666">1</span>
+<span style="color: #666666">------------------------------------</span>
+
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">10*4</span> 
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+EXPRESSAO: <span style="color: #666666">10*4</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: <span style="color: #666666">10*4</span>
+Para: <span style="color: #666666">225.1.1.1</span>
+Porta: <span style="color: #666666">3333</span>
+
+Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
+
+Aguardando a resposta do calculo<span style="color: #666666">...</span>
+
+Recebeu o resultado da operacao
+
+<span style="color: #666666">------------------------------------</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">40</span>
+Id do servidor que respondeu: <span style="color: #666666">1</span>
+<span style="color: #666666">------------------------------------</span>
+
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">80-230</span>
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+EXPRESSAO: <span style="color: #666666">80-230</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: <span style="color: #666666">80-230</span>
+Para: <span style="color: #666666">225.1.1.1</span>
+Porta: <span style="color: #666666">3333</span>
+
+Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
+
+Aguardando a resposta do calculo<span style="color: #666666">...</span>
+
+Recebeu o resultado da operacao
+
+<span style="color: #666666">------------------------------------</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">-150</span>
+Id do servidor que respondeu: <span style="color: #666666">1</span>
+<span style="color: #666666">------------------------------------</span>
+
+<span style="color: #666666">&gt;</span> python cliente<span style="color: #666666">.</span>py <span style="color: #666666">10+2</span>
+ENDERECO_IP (TRANSMISSAO): <span style="color: #666666">225.1.1.1</span>
+PORTA_MULTICAST: <span style="color: #666666">3333</span>
+EXPRESSAO: <span style="color: #666666">10+2</span>
+
+Estabeleceu o socket para recebimento de mensagens
+
+Estabeleceu o socket para envio de mensagens
+
+Enviando: <span style="color: #666666">10+2</span>
+Para: <span style="color: #666666">225.1.1.1</span>
+Porta: <span style="color: #666666">3333</span>
+
+Definiu o timeout da mensagem para <span style="color: #666666">2</span> segundos
+
+Aguardando a resposta do calculo<span style="color: #666666">...</span>
+
+Recebeu o resultado da operacao
+
+<span style="color: #666666">------------------------------------</span>
+Resultado <span style="color: #666666">=</span> <span style="color: #666666">12</span>
+Id do servidor que respondeu: <span style="color: #666666">3</span>
+<span style="color: #666666">------------------------------------</span>
 </pre></div>
+
 
 </section>
 </body>
